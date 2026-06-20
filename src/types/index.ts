@@ -23,6 +23,13 @@ export interface ChoreLog {
   created_at: string
 }
 
+export interface ChoreNote {
+  chore_id: string
+  author: string
+  message: string
+  updated_at: string
+}
+
 export interface ChoreWithStatus extends Chore {
   last_done_date: string | null
   last_done_by: string | null

@@ -65,3 +65,19 @@ drop policy if exists "chore_logs_all_authenticated" on chore_logs;
 create policy "chore_logs_all_authenticated" on chore_logs for all to authenticated using (true) with check (true);
 
 create index if not exists chore_logs_chore_id_idx on chore_logs(chore_id, done_date desc);
+
+-- ── 처리 전 메모 ──────────────────────────────────────────────────────
+-- 집안일을 처리하기 전에 상대방에게 남기는 한 줄 메모(예: "오늘 바빠서 못 했어, 내일 부탁해").
+-- 집안일 하나당 메모 하나만 유지된다(다시 쓰면 덮어씀).
+
+create table if not exists chore_notes (
+  chore_id uuid primary key references chores(id) on delete cascade,
+  author uuid not null references profiles(id),
+  message text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table chore_notes enable row level security;
+
+drop policy if exists "chore_notes_all_authenticated" on chore_notes;
+create policy "chore_notes_all_authenticated" on chore_notes for all to authenticated using (true) with check (true);
