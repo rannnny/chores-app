@@ -37,6 +37,7 @@ export default function Home() {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
   const [month, setMonth] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState(todayStr())
 
   async function load() {
     setLoading(true)
@@ -56,9 +57,9 @@ export default function Home() {
   const dueList = useMemo(
     () =>
       chores
-        .filter((c) => (c.next_due_date && c.next_due_date <= today) || c.last_done_date === today)
+        .filter((c) => (c.next_due_date && c.next_due_date <= selectedDate) || c.last_done_date === selectedDate)
         .sort((a, b) => (a.next_due_date ?? '9999-99-99') < (b.next_due_date ?? '9999-99-99') ? -1 : 1),
-    [chores, today]
+    [chores, selectedDate]
   )
 
   const dueDatesInMonth = useMemo(() => {
@@ -128,13 +129,15 @@ export default function Home() {
                   : dow === 6
                     ? 'text-blue-500'
                     : 'text-slate-700'
+            const isSelected = key === selectedDate
             return (
-              <div
+              <button
                 key={key}
                 title={holidayNames?.join(', ')}
+                onClick={() => setSelectedDate(key)}
                 className={`aspect-square rounded-xl flex flex-col items-center justify-center text-xs ${
                   isToday(day) ? 'bg-teal-600 text-white font-semibold' : dateColor
-                }`}
+                } ${isSelected && !isToday(day) ? 'ring-2 ring-teal-500' : ''} ${isSelected ? 'ring-offset-1' : ''}`}
               >
                 <span>{format(day, 'd')}</span>
                 {dueChores.length > 0 && (
@@ -144,23 +147,26 @@ export default function Home() {
                     } ${isToday(day) ? '!bg-white' : ''}`}
                   />
                 )}
-              </div>
+              </button>
             )
           })}
         </div>
       </section>
 
       <section>
-        <h2 className="font-semibold text-slate-900 mb-2">오늘 할 일{dueList.length > 0 && ` (${dueList.length})`}</h2>
+        <h2 className="font-semibold text-slate-900 mb-2">
+          {selectedDate === today ? '오늘 할 일' : `${selectedDate} 할 일`}
+          {dueList.length > 0 && ` (${dueList.length})`}
+        </h2>
         {dueList.length === 0 ? (
           <p className="text-sm text-slate-400 bg-white rounded-2xl p-4 text-center border border-slate-100">
-            오늘은 할 일이 없어요 🎉
+            {selectedDate === today ? '오늘은 할 일이 없어요 🎉' : '이 날에는 할 일이 없어요'}
           </p>
         ) : (
           <ul className="space-y-2">
             {dueList.map((chore) => {
-              const doneToday = chore.last_done_date === today
-              const overdue = !doneToday && !!chore.next_due_date && chore.next_due_date < today
+              const doneOnSelected = chore.last_done_date === selectedDate
+              const overdue = !doneOnSelected && !!chore.next_due_date && chore.next_due_date < selectedDate
               return (
                 <li
                   key={chore.id}
@@ -168,26 +174,26 @@ export default function Home() {
                 >
                   <div>
                     <p className="font-medium text-slate-900">{chore.name}</p>
-                    <p className={`text-xs ${overdue ? 'text-rose-500' : 'text-slate-400'}`}>
-                      {chore.last_done_date
-                        ? `마지막 처리: ${chore.last_done_date} (${profileName(chore.last_done_by)})`
-                        : '아직 처리한 적 없어요'}
-                      {overdue && ' · 기한 지남'}
-                    </p>
+                    {chore.last_done_date && (
+                      <p className={`text-xs ${overdue ? 'text-rose-500' : 'text-slate-400'}`}>
+                        마지막 처리: {chore.last_done_date} ({profileName(chore.last_done_by)})
+                        {overdue && ' · 기한 지남'}
+                      </p>
+                    )}
                   </div>
                   <button
                     onClick={() =>
-                      doneToday && chore.last_log_id
+                      doneOnSelected && chore.last_log_id
                         ? handleUndo(chore.last_log_id)
-                        : handleComplete(chore.id, todayStr(), '')
+                        : handleComplete(chore.id, selectedDate, '')
                     }
                     className={`rounded-full text-sm px-3 py-1.5 font-medium ${
-                      doneToday
+                      doneOnSelected
                         ? 'bg-slate-100 hover:bg-slate-200 text-slate-400'
                         : 'bg-teal-600 hover:bg-teal-500 text-white'
                     }`}
                   >
-                    {doneToday ? '완료 ↩' : '처리'}
+                    {doneOnSelected ? '완료 ↩' : '처리'}
                   </button>
                 </li>
               )

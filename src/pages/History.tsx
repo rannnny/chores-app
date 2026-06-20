@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useAuth } from '../lib/AuthContext'
 import { useToast } from '../components/Toast'
 import { deleteLog, getAllLogs, getAllProfiles, getChoresWithStatus, updateLogMemo } from '../lib/data'
 import type { Chore, ChoreLog, Profile } from '../types/index'
 
 export default function History() {
-  const { session } = useAuth()
   const showToast = useToast()
   const [logs, setLogs] = useState<ChoreLog[]>([])
   const [chores, setChores] = useState<Chore[]>([])
@@ -36,10 +34,10 @@ export default function History() {
     [logs, choreFilter]
   )
 
-  async function handleDelete(id: string) {
-    if (!confirm('이 처리 기록을 삭제할까요?')) return
+  async function handleRestore(id: string) {
+    if (!confirm('이 처리 기록을 복원(취소)할까요? 처리하지 않은 상태로 돌아가요.')) return
     await deleteLog(id)
-    showToast('삭제했어요')
+    showToast('복원했어요')
     load()
   }
 
@@ -81,7 +79,6 @@ export default function History() {
       ) : (
         <ul className="space-y-2">
           {filteredLogs.map((log) => {
-            const isMine = log.done_by === session?.user.id
             const isEditing = editingMemoId === log.id
             return (
               <li key={log.id} className="bg-white rounded-2xl p-3 border border-slate-100">
@@ -115,21 +112,24 @@ export default function History() {
                         </button>
                       </div>
                     ) : (
-                      <p
-                        onClick={() => isMine && startEditMemo(log)}
-                        className={`text-sm mt-1 ${log.memo ? 'text-slate-600' : 'text-slate-300'} ${isMine ? 'cursor-pointer' : ''}`}
-                      >
-                        {log.memo || (isMine ? '메모 추가하기' : '')}
-                      </p>
+                      log.memo && <p className="text-sm mt-1 text-slate-600">{log.memo}</p>
                     )}
                   </div>
-                  {isMine && !isEditing && (
-                    <button
-                      onClick={() => handleDelete(log.id)}
-                      className="text-xs text-slate-300 hover:text-rose-500 shrink-0"
-                    >
-                      삭제
-                    </button>
+                  {!isEditing && (
+                    <div className="flex gap-1.5 shrink-0">
+                      <button
+                        onClick={() => startEditMemo(log)}
+                        className="rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs px-3 py-1.5"
+                      >
+                        메모
+                      </button>
+                      <button
+                        onClick={() => handleRestore(log.id)}
+                        className="rounded-full bg-rose-50 hover:bg-rose-100 text-rose-500 text-xs px-3 py-1.5"
+                      >
+                        복원
+                      </button>
+                    </div>
                   )}
                 </div>
               </li>
