@@ -19,8 +19,8 @@ export async function getMyProfile(userId: string): Promise<Profile | null> {
   return data
 }
 
-export async function updateMyGender(userId: string, gender: 'female' | 'male'): Promise<void> {
-  const { error } = await supabase.from('profiles').update({ gender }).eq('id', userId)
+export async function updateMyEmoji(userId: string, emoji: string): Promise<void> {
+  const { error } = await supabase.from('profiles').update({ emoji }).eq('id', userId)
   if (error) throw error
 }
 

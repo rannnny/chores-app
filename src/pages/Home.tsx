@@ -53,7 +53,11 @@ export default function Home() {
 
   async function load() {
     setLoading(true)
-    const [c, p, n] = await Promise.all([getChoresWithStatus(), getAllProfiles(), getAllNotes()])
+    const [c, p, n] = await Promise.all([
+      getChoresWithStatus(),
+      getAllProfiles(),
+      getAllNotes().catch(() => []),
+    ])
     setChores(c)
     setProfiles(p)
     setNotes(n)
@@ -65,10 +69,7 @@ export default function Home() {
   }, [])
 
   const profileName = (id: string | null) => profiles.find((p) => p.id === id)?.display_name ?? '알 수 없음'
-  const profileEmoji = (id: string | null) => {
-    const gender = profiles.find((p) => p.id === id)?.gender
-    return gender === 'female' ? '👩' : gender === 'male' ? '👨' : ''
-  }
+  const profileEmoji = (id: string | null) => profiles.find((p) => p.id === id)?.emoji ?? ''
 
   const today = todayStr()
   const dueList = useMemo(

@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import { useAuth } from '../lib/AuthContext'
 import { useToast } from '../components/Toast'
-import { updateMyGender } from '../lib/data'
+import { updateMyEmoji } from '../lib/data'
 
 export default function Settings() {
   const { session, profile, refreshProfile } = useAuth()
   const showToast = useToast()
+  const [emoji, setEmoji] = useState(profile?.emoji ?? '')
   const [saving, setSaving] = useState(false)
 
-  async function handlePick(gender: 'female' | 'male') {
-    if (!session) return
+  async function handleSave() {
+    if (!session || !emoji.trim()) return
     setSaving(true)
-    await updateMyGender(session.user.id, gender)
+    await updateMyEmoji(session.user.id, emoji.trim())
     await refreshProfile()
     setSaving(false)
     showToast('저장했어요')
@@ -23,25 +24,21 @@ export default function Settings() {
 
       <div className="bg-white rounded-2xl p-4 border border-slate-100 space-y-3">
         <p className="font-medium text-slate-900">{profile?.display_name}님의 이모지</p>
-        <p className="text-xs text-slate-400">완료 표시에 쓸 이모지를 골라주세요.</p>
+        <p className="text-xs text-slate-400">완료 표시에 쓸 이모지를 직접 입력해주세요. (예: 👩 👨 🐱 🦁)</p>
         <div className="flex gap-2">
+          <input
+            type="text"
+            value={emoji}
+            onChange={(e) => setEmoji(e.target.value)}
+            placeholder="이모지 입력"
+            className="flex-1 rounded-xl border border-slate-300 px-3 py-2 text-2xl text-center outline-none focus:border-teal-500"
+          />
           <button
-            disabled={saving}
-            onClick={() => handlePick('female')}
-            className={`flex-1 rounded-xl py-3 text-2xl ${
-              profile?.gender === 'female' ? 'bg-teal-600' : 'bg-slate-100'
-            }`}
+            disabled={saving || !emoji.trim()}
+            onClick={handleSave}
+            className="rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white px-4 font-medium"
           >
-            👩
-          </button>
-          <button
-            disabled={saving}
-            onClick={() => handlePick('male')}
-            className={`flex-1 rounded-xl py-3 text-2xl ${
-              profile?.gender === 'male' ? 'bg-teal-600' : 'bg-slate-100'
-            }`}
-          >
-            👨
+            저장
           </button>
         </div>
       </div>
