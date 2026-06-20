@@ -21,8 +21,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {toast && (
         <div className="fixed bottom-24 inset-x-0 flex justify-center px-4 z-50 pointer-events-none">
           <div
-            className={`rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg ${
-              toast.kind === 'success' ? 'bg-teal-600' : 'bg-rose-500'
+            className={`rounded-lg px-4 py-2 text-sm font-medium text-white shadow-lg ${
+              toast.kind === 'success' ? 'bg-slate-900' : 'bg-rose-500'
             }`}
           >
             {toast.message}

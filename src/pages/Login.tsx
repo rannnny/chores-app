@@ -38,51 +38,49 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-dvh flex items-start justify-center px-4 pt-20 overflow-y-auto bg-gradient-to-b from-teal-50 to-slate-50">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm bg-white rounded-3xl p-6 space-y-4 border border-teal-100 shadow-sm"
-      >
-        <div className="text-center space-y-1">
-          <p className="text-3xl">🧺</p>
-          <h1 className="text-xl font-bold text-slate-900">집안일 공유</h1>
-          <p className="text-sm text-slate-500">{mode === 'signin' ? '로그인' : '계정 만들기'}</p>
+    <div className="min-h-dvh flex items-start justify-center px-5 pt-24 overflow-y-auto bg-white">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-5">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">집안일 공유</h1>
+          <p className="text-sm text-slate-400">{mode === 'signin' ? '로그인' : '계정 만들기'}</p>
         </div>
 
-        {mode === 'signup' && (
+        <div className="space-y-3">
+          {mode === 'signup' && (
+            <input
+              type="text"
+              required
+              placeholder="이름 (예: 아란)"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              className="w-full rounded-lg bg-white border border-slate-200 px-3 py-2.5 text-slate-900 outline-none focus:border-slate-900"
+            />
+          )}
           <input
-            type="text"
+            type="email"
             required
-            placeholder="이름 (예: 아란)"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            className="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-teal-500"
+            placeholder="이메일"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-lg bg-white border border-slate-200 px-3 py-2.5 text-slate-900 outline-none focus:border-slate-900"
           />
-        )}
-        <input
-          type="email"
-          required
-          placeholder="이메일"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-teal-500"
-        />
-        <input
-          type="password"
-          required
-          minLength={6}
-          placeholder="비밀번호"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-slate-900 outline-none focus:border-teal-500"
-        />
+          <input
+            type="password"
+            required
+            minLength={6}
+            placeholder="비밀번호"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-lg bg-white border border-slate-200 px-3 py-2.5 text-slate-900 outline-none focus:border-slate-900"
+          />
+        </div>
 
         {error && <p className="text-sm text-rose-500">{error}</p>}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 py-2.5 font-medium text-white transition"
+          className="w-full rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 py-2.5 font-medium text-white transition"
         >
           {loading ? '처리 중...' : mode === 'signin' ? '로그인' : '가입하기'}
         </button>
@@ -90,7 +88,7 @@ export default function Login() {
         <button
           type="button"
           onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
-          className="w-full text-sm text-slate-500 hover:text-slate-700"
+          className="w-full text-sm text-slate-400 hover:text-slate-700"
         >
           {mode === 'signin' ? '계정이 없나요? 가입하기' : '이미 계정이 있나요? 로그인'}
         </button>

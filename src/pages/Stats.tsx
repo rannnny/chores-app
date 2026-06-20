@@ -53,29 +53,31 @@ export default function Stats() {
         <button onClick={() => setMonth((m) => subMonths(m, 1))} className="text-slate-400 px-2">
           ‹
         </button>
-        <h2 className="font-semibold text-slate-900">{format(month, 'yyyy년 M월')} 처리 통계</h2>
+        <h2 className="text-lg font-semibold text-slate-900 tracking-tight">
+          {format(month, 'yyyy년 M월')} 처리 통계
+        </h2>
         <button onClick={() => setMonth((m) => addMonths(m, 1))} className="text-slate-400 px-2">
           ›
         </button>
       </div>
 
       {total === 0 ? (
-        <p className="text-sm text-slate-400 bg-white rounded-2xl p-4 text-center border border-slate-100">
-          이 달에는 처리 기록이 없어요.
-        </p>
+        <p className="text-sm text-slate-400 py-6 text-center">이 달에는 처리 기록이 없어요.</p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="divide-y divide-slate-100">
           {profiles.map((p) => {
             const count = counts.get(p.id) ?? 0
             const pct = total > 0 ? Math.round((count / total) * 100) : 0
             return (
-              <li key={p.id} className="bg-white rounded-2xl p-3 border border-slate-100">
-                <div className="flex items-center justify-between mb-1">
+              <li key={p.id} className="py-3">
+                <div className="flex items-center justify-between mb-1.5">
                   <p className="font-medium text-slate-900">{p.display_name}</p>
-                  <p className="text-sm text-slate-500">{count}건 ({pct}%)</p>
+                  <p className="text-sm text-slate-500">
+                    {count}건 ({pct}%)
+                  </p>
                 </div>
-                <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
-                  <div className="h-full bg-teal-500" style={{ width: `${pct}%` }} />
+                <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                  <div className="h-full bg-slate-900" style={{ width: `${pct}%` }} />
                 </div>
               </li>
             )
@@ -83,24 +85,23 @@ export default function Stats() {
         </ul>
       )}
 
-      <section className="space-y-2">
-        <h3 className="text-sm font-semibold text-slate-500 pt-2">집안일별 처리 현황 (반복)</h3>
+      <section>
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1 pt-2">
+          집안일별 처리 현황 (반복)
+        </h3>
         {recurringStats.length === 0 ? (
-          <p className="text-sm text-slate-400 bg-white rounded-2xl p-4 text-center border border-slate-100">
-            등록된 반복 작업이 없어요.
-          </p>
+          <p className="text-sm text-slate-400 py-6 text-center">등록된 반복 작업이 없어요.</p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="divide-y divide-slate-100">
             {recurringStats.map(({ chore, count, expected, onTrack }) => (
-              <li
-                key={chore.id}
-                className="bg-white rounded-2xl p-3 border border-slate-100 flex items-center justify-between"
-              >
+              <li key={chore.id} className="py-3 flex items-center justify-between">
                 <div>
                   <p className="font-medium text-slate-900">{chore.name}</p>
-                  <p className="text-xs text-slate-400">{chore.period_days}일마다 반복 · 예상 {expected}회</p>
+                  <p className="text-xs text-slate-400">
+                    {chore.period_days}일마다 반복 · 예상 {expected}회
+                  </p>
                 </div>
-                <p className={`text-sm font-semibold ${onTrack ? 'text-teal-600' : 'text-rose-500'}`}>
+                <p className={`text-sm font-semibold ${onTrack ? 'text-slate-900' : 'text-rose-500'}`}>
                   {count}회 {onTrack ? '✅' : '⚠️'}
                 </p>
               </li>
@@ -109,21 +110,18 @@ export default function Stats() {
         )}
       </section>
 
-      <section className="space-y-2">
-        <h3 className="text-sm font-semibold text-slate-500 pt-2">집안일별 처리 현황 (1회성)</h3>
+      <section>
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1 pt-2">
+          집안일별 처리 현황 (1회성)
+        </h3>
         {onceStats.length === 0 ? (
-          <p className="text-sm text-slate-400 bg-white rounded-2xl p-4 text-center border border-slate-100">
-            등록된 1회성 작업이 없어요.
-          </p>
+          <p className="text-sm text-slate-400 py-6 text-center">등록된 1회성 작업이 없어요.</p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="divide-y divide-slate-100">
             {onceStats.map(({ chore, count }) => (
-              <li
-                key={chore.id}
-                className="bg-white rounded-2xl p-3 border border-slate-100 flex items-center justify-between"
-              >
+              <li key={chore.id} className="py-3 flex items-center justify-between">
                 <p className="font-medium text-slate-900">{chore.name}</p>
-                <p className={`text-sm font-semibold ${count > 0 ? 'text-teal-600' : 'text-slate-400'}`}>
+                <p className={`text-sm font-semibold ${count > 0 ? 'text-slate-900' : 'text-slate-400'}`}>
                   {count > 0 ? '처리완료 ✅' : '미처리'}
                 </p>
               </li>

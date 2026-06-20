@@ -163,25 +163,25 @@ export default function Home() {
     <div className="space-y-6 pt-4">
       <section>
         {editingHouseNote ? (
-          <div className="bg-rose-50 border border-rose-200 rounded-2xl p-3 space-y-2">
+          <div className="border border-amber-300 rounded-lg p-3 space-y-2">
             <input
               type="text"
               autoFocus
               value={houseNoteDraft}
               placeholder="예: 가스 점검 내일 오전 10시 방문"
               onChange={(e) => setHouseNoteDraft(e.target.value)}
-              className="w-full rounded-xl border border-rose-300 px-3 py-2 text-sm outline-none focus:border-rose-500"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-900"
             />
             <div className="flex gap-2">
               <button
                 onClick={handleSaveHouseNote}
-                className="flex-1 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm py-2 font-medium"
+                className="flex-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm py-2 font-medium"
               >
                 저장
               </button>
               <button
                 onClick={() => setEditingHouseNote(false)}
-                className="flex-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 text-sm py-2"
+                className="flex-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 text-sm py-2"
               >
                 취소
               </button>
@@ -190,7 +190,7 @@ export default function Home() {
         ) : houseNote ? (
           <div
             title={profileName(houseNote.author)}
-            className="bg-white border-2 border-amber-400 rounded-2xl pl-3 pr-1.5 py-1.5 flex items-center justify-between gap-2"
+            className="border border-amber-300 rounded-lg pl-3 pr-1.5 py-1.5 flex items-center justify-between gap-2"
           >
             <p className="text-sm font-bold text-slate-900 truncate">❗ {houseNote.message}</p>
             <div className="flex gap-1 shrink-0">
@@ -256,9 +256,9 @@ export default function Home() {
                 key={key}
                 title={holidayNames?.join(', ')}
                 onClick={() => setSelectedDate(key)}
-                className={`aspect-square rounded-xl flex flex-col items-center justify-center text-xs ${
-                  isToday(day) ? 'bg-teal-600 text-white font-semibold' : dateColor
-                } ${isSelected && !isToday(day) ? 'ring-2 ring-teal-500' : ''} ${isSelected ? 'ring-offset-1' : ''}`}
+                className={`aspect-square rounded-lg flex flex-col items-center justify-center text-xs ${
+                  isToday(day) ? 'bg-slate-900 text-white font-semibold' : dateColor
+                } ${isSelected && !isToday(day) ? 'ring-1 ring-slate-900' : ''}`}
               >
                 <span>{format(day, 'd')}</span>
                 {dueChores.length > 0 && (
@@ -280,18 +280,18 @@ export default function Home() {
           {dueList.length > 0 && ` (${dueList.length})`}
         </h2>
         {dueList.length === 0 ? (
-          <p className="text-sm text-slate-400 bg-white rounded-2xl p-4 text-center border border-slate-100">
+          <p className="text-sm text-slate-400 py-10 text-center">
             {selectedDate === today ? '오늘은 할 일이 없어요 🎉' : '이 날에는 할 일이 없어요'}
           </p>
         ) : (
-          <ul className="space-y-2">
+          <ul className="divide-y divide-slate-100">
             {dueList.map((chore) => {
               const doneOnSelected = chore.last_done_date === selectedDate
               const overdue = !doneOnSelected && !!chore.next_due_date && chore.next_due_date < selectedDate
               const note = notes.find((n) => n.chore_id === chore.id)
               const isEditingNote = noteEditingId === chore.id
               return (
-                <li key={chore.id} className="bg-white rounded-2xl p-3 border border-slate-100 space-y-2">
+                <li key={chore.id} className="py-3 space-y-2">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-slate-900">{chore.name}</p>
@@ -310,10 +310,10 @@ export default function Home() {
                             ? handleUndo(chore.last_log_id)
                             : handleComplete(chore.id, selectedDate, '')
                         }
-                        className={`rounded-full text-sm px-3 py-1.5 font-medium ${
+                        className={`rounded-lg text-sm px-3 py-1.5 font-medium ${
                           doneOnSelected
                             ? 'bg-slate-100 hover:bg-slate-200 text-slate-400'
-                            : 'bg-teal-600 hover:bg-teal-500 text-white'
+                            : 'bg-slate-900 hover:bg-slate-800 text-white'
                         }`}
                       >
                         {doneOnSelected ? '완료 ↩' : '처리'}
@@ -329,36 +329,36 @@ export default function Home() {
                         value={noteDraft}
                         placeholder="예: 오늘 바빠서 못 했어, 내일 부탁해"
                         onChange={(e) => setNoteDraft(e.target.value)}
-                        className="flex-1 rounded-xl border border-slate-300 px-3 py-1.5 text-sm outline-none focus:border-teal-500"
+                        className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-slate-900"
                       />
                       <button
                         onClick={() => handleSaveNote(chore.id)}
-                        className="rounded-full bg-teal-600 hover:bg-teal-500 text-white text-xs px-3 py-1.5 font-medium shrink-0"
+                        className="rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs px-3 py-1.5 font-medium shrink-0"
                       >
                         저장
                       </button>
                       <button
                         onClick={() => setNoteEditingId(null)}
-                        className="rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs px-3 py-1.5 shrink-0"
+                        className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs px-3 py-1.5 shrink-0"
                       >
                         취소
                       </button>
                     </div>
                   ) : note ? (
-                    <div className="flex items-center justify-between gap-2 bg-amber-50 rounded-xl px-3 py-1.5">
-                      <p className="text-xs text-amber-700">
+                    <div className="flex items-center justify-between gap-2 bg-slate-50 rounded-lg px-3 py-1.5">
+                      <p className="text-xs text-slate-500">
                         💬 {profileName(note.author)}: {note.message}
                       </p>
                       <div className="flex gap-2 shrink-0">
                         <button
                           onClick={() => startEditNote(chore, note)}
-                          className="text-xs text-amber-600 hover:text-amber-800"
+                          className="text-xs text-slate-400 hover:text-slate-700"
                         >
                           수정
                         </button>
                         <button
                           onClick={() => handleClearNote(chore.id)}
-                          className="text-xs text-amber-600 hover:text-amber-800"
+                          className="text-xs text-slate-400 hover:text-slate-700"
                         >
                           지우기
                         </button>

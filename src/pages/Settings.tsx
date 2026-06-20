@@ -20,9 +20,9 @@ export default function Settings() {
 
   return (
     <div className="space-y-4 pt-4">
-      <h2 className="font-semibold text-slate-900">설정</h2>
+      <h2 className="text-lg font-semibold text-slate-900 tracking-tight">설정</h2>
 
-      <div className="bg-white rounded-2xl p-4 border border-slate-100 space-y-3">
+      <div className="space-y-3 pt-2">
         <p className="font-medium text-slate-900">{profile?.display_name}님의 이모지</p>
         <p className="text-xs text-slate-400">완료 표시에 쓸 이모지를 직접 입력해주세요. (예: 👩 👨 🐱 🦁)</p>
         <div className="flex gap-2">
@@ -31,12 +31,12 @@ export default function Settings() {
             value={emoji}
             onChange={(e) => setEmoji(e.target.value)}
             placeholder="이모지 입력"
-            className="flex-1 rounded-xl border border-slate-300 px-3 py-2 text-2xl text-center outline-none focus:border-teal-500"
+            className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-2xl text-center outline-none focus:border-slate-900"
           />
           <button
             disabled={saving || !emoji.trim()}
             onClick={handleSave}
-            className="rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white px-4 font-medium"
+            className="rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-4 font-medium"
           >
             저장
           </button>

@@ -59,12 +59,12 @@ export default function History() {
 
   return (
     <div className="space-y-4 pt-4">
-      <h2 className="font-semibold text-slate-900">처리 이력</h2>
+      <h2 className="text-lg font-semibold text-slate-900 tracking-tight">처리 이력</h2>
 
       <select
         value={choreFilter}
         onChange={(e) => setChoreFilter(e.target.value)}
-        className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:border-teal-500 bg-white"
+        className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-slate-900 bg-white text-sm"
       >
         <option value="all">전체 집안일</option>
         {chores.map((c) => (
@@ -77,15 +77,13 @@ export default function History() {
       {loading ? (
         <p className="text-slate-400 text-center mt-10">불러오는 중...</p>
       ) : filteredLogs.length === 0 ? (
-        <p className="text-sm text-slate-400 bg-white rounded-2xl p-4 text-center border border-slate-100">
-          처리 기록이 없어요.
-        </p>
+        <p className="text-sm text-slate-400 py-10 text-center">처리 기록이 없어요.</p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="divide-y divide-slate-100">
           {filteredLogs.map((log) => {
             const isEditing = editingMemoId === log.id
             return (
-              <li key={log.id} className="bg-white rounded-2xl p-3 border border-slate-100">
+              <li key={log.id} className="py-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
                     <p className="font-medium text-slate-900">{choreName(log.chore_id)}</p>
@@ -100,17 +98,17 @@ export default function History() {
                           value={memoDraft}
                           placeholder="메모 입력"
                           onChange={(e) => setMemoDraft(e.target.value)}
-                          className="flex-1 rounded-xl border border-slate-300 px-3 py-1.5 text-sm outline-none focus:border-teal-500"
+                          className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-slate-900"
                         />
                         <button
                           onClick={() => handleSaveMemo(log.id)}
-                          className="rounded-full bg-teal-600 hover:bg-teal-500 text-white text-xs px-3 py-1.5 font-medium shrink-0"
+                          className="rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs px-3 py-1.5 font-medium shrink-0"
                         >
                           저장
                         </button>
                         <button
                           onClick={() => setEditingMemoId(null)}
-                          className="rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs px-3 py-1.5 shrink-0"
+                          className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs px-3 py-1.5 shrink-0"
                         >
                           취소
                         </button>
@@ -120,17 +118,11 @@ export default function History() {
                     )}
                   </div>
                   {!isEditing && (
-                    <div className="flex gap-1.5 shrink-0">
-                      <button
-                        onClick={() => startEditMemo(log)}
-                        className="rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs px-3 py-1.5"
-                      >
+                    <div className="flex gap-3 text-xs shrink-0">
+                      <button onClick={() => startEditMemo(log)} className="text-slate-400 hover:text-slate-900">
                         메모
                       </button>
-                      <button
-                        onClick={() => handleRestore(log.id)}
-                        className="rounded-full bg-rose-50 hover:bg-rose-100 text-rose-500 text-xs px-3 py-1.5"
-                      >
+                      <button onClick={() => handleRestore(log.id)} className="text-slate-400 hover:text-rose-500">
                         복원
                       </button>
                     </div>

@@ -14,8 +14,8 @@ export default defineConfig({
         name: '집안일 공유',
         short_name: '집안일',
         description: '부부가 함께 쓰는 집안일 관리 앱',
-        theme_color: '#0d9488',
-        background_color: '#f8fafc',
+        theme_color: '#0f172a',
+        background_color: '#ffffff',
         display: 'standalone',
         start_url: '/',
         icons: [
