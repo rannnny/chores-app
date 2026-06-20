@@ -16,16 +16,19 @@ import { y2018, y2019, y2020, y2021, y2022, y2023, y2024, y2025, y2026 } from '@
 import { useAuth } from '../lib/AuthContext'
 import { useToast } from '../components/Toast'
 import {
+  clearHouseNote,
   clearNote,
   deleteLog,
   getAllNotes,
   getAllProfiles,
   getChoresWithStatus,
+  getHouseNote,
   logChoreDone,
+  setHouseNote,
   setNote,
   todayStr,
 } from '../lib/data'
-import type { ChoreNote, ChoreWithStatus, Profile } from '../types/index'
+import type { ChoreNote, ChoreWithStatus, HouseNote, Profile } from '../types/index'
 
 const HOLIDAYS: Record<string, readonly string[]> = {
   ...y2018,
@@ -45,22 +48,27 @@ export default function Home() {
   const [chores, setChores] = useState<ChoreWithStatus[]>([])
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [notes, setNotes] = useState<ChoreNote[]>([])
+  const [houseNote, setHouseNoteState] = useState<HouseNote | null>(null)
   const [loading, setLoading] = useState(true)
   const [month, setMonth] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState(todayStr())
   const [noteEditingId, setNoteEditingId] = useState<string | null>(null)
   const [noteDraft, setNoteDraft] = useState('')
+  const [editingHouseNote, setEditingHouseNote] = useState(false)
+  const [houseNoteDraft, setHouseNoteDraft] = useState('')
 
   async function load() {
     setLoading(true)
-    const [c, p, n] = await Promise.all([
+    const [c, p, n, h] = await Promise.all([
       getChoresWithStatus(),
       getAllProfiles(),
       getAllNotes().catch(() => []),
+      getHouseNote().catch(() => null),
     ])
     setChores(c)
     setProfiles(p)
     setNotes(n)
+    setHouseNoteState(h)
     setLoading(false)
   }
 
@@ -132,10 +140,85 @@ export default function Home() {
     load()
   }
 
+  function startEditHouseNote() {
+    setHouseNoteDraft(houseNote?.message ?? '')
+    setEditingHouseNote(true)
+  }
+
+  async function handleSaveHouseNote() {
+    if (!session || !houseNoteDraft.trim()) return
+    await setHouseNote(session.user.id, houseNoteDraft.trim())
+    setEditingHouseNote(false)
+    load()
+  }
+
+  async function handleConfirmHouseNote() {
+    await clearHouseNote()
+    load()
+  }
+
   if (loading) return <p className="text-slate-400 mt-10 text-center">불러오는 중...</p>
 
   return (
     <div className="space-y-6 pt-4">
+      <section>
+        {editingHouseNote ? (
+          <div className="bg-rose-50 border border-rose-200 rounded-2xl p-3 space-y-2">
+            <input
+              type="text"
+              autoFocus
+              value={houseNoteDraft}
+              placeholder="예: 가스 점검 내일 오전 10시 방문"
+              onChange={(e) => setHouseNoteDraft(e.target.value)}
+              className="w-full rounded-xl border border-rose-300 px-3 py-2 text-sm outline-none focus:border-rose-500"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={handleSaveHouseNote}
+                className="flex-1 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm py-2 font-medium"
+              >
+                저장
+              </button>
+              <button
+                onClick={() => setEditingHouseNote(false)}
+                className="flex-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 text-sm py-2"
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        ) : houseNote ? (
+          <div className="bg-rose-50 border border-rose-200 rounded-2xl p-3 flex items-start justify-between gap-2">
+            <div>
+              <p className="text-xs font-semibold text-rose-500 mb-0.5">🚨 긴급 메모</p>
+              <p className="text-sm text-rose-700">{houseNote.message}</p>
+              <p className="text-xs text-rose-400 mt-0.5">{profileName(houseNote.author)}</p>
+            </div>
+            <div className="flex gap-1.5 shrink-0">
+              <button
+                onClick={startEditHouseNote}
+                className="rounded-full bg-rose-100 hover:bg-rose-200 text-rose-600 text-xs px-3 py-1.5"
+              >
+                수정
+              </button>
+              <button
+                onClick={handleConfirmHouseNote}
+                className="rounded-full bg-rose-600 hover:bg-rose-500 text-white text-xs px-3 py-1.5 font-medium"
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={startEditHouseNote}
+            className="text-xs text-slate-300 hover:text-slate-500"
+          >
+            + 긴급 메모 남기기
+          </button>
+        )}
+      </section>
+
       <section>
         <div className="flex items-center justify-between mb-2">
           <button onClick={() => setMonth((m) => subMonths(m, 1))} className="text-slate-400 px-2">

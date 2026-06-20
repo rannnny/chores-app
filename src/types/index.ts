@@ -30,6 +30,13 @@ export interface ChoreNote {
   updated_at: string
 }
 
+export interface HouseNote {
+  id: number
+  author: string
+  message: string
+  updated_at: string
+}
+
 export interface ChoreWithStatus extends Chore {
   last_done_date: string | null
   last_done_by: string | null

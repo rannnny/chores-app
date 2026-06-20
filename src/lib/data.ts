@@ -1,6 +1,6 @@
 import { addDays, format } from 'date-fns'
 import { supabase } from './supabase'
-import type { Chore, ChoreLog, ChoreNote, ChoreWithStatus, Profile } from '../types/index'
+import type { Chore, ChoreLog, ChoreNote, ChoreWithStatus, HouseNote, Profile } from '../types/index'
 
 export function todayStr(): string {
   return format(new Date(), 'yyyy-MM-dd')
@@ -151,5 +151,23 @@ export async function setNote(choreId: string, author: string, message: string):
 
 export async function clearNote(choreId: string): Promise<void> {
   const { error } = await supabase.from('chore_notes').delete().eq('chore_id', choreId)
+  if (error) throw error
+}
+
+export async function getHouseNote(): Promise<HouseNote | null> {
+  const { data, error } = await supabase.from('house_notes').select('*').eq('id', 1).maybeSingle()
+  if (error) throw error
+  return data
+}
+
+export async function setHouseNote(author: string, message: string): Promise<void> {
+  const { error } = await supabase
+    .from('house_notes')
+    .upsert({ id: 1, author, message, updated_at: new Date().toISOString() }, { onConflict: 'id' })
+  if (error) throw error
+}
+
+export async function clearHouseNote(): Promise<void> {
+  const { error } = await supabase.from('house_notes').delete().eq('id', 1)
   if (error) throw error
 }

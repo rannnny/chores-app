@@ -81,3 +81,18 @@ alter table chore_notes enable row level security;
 
 drop policy if exists "chore_notes_all_authenticated" on chore_notes;
 create policy "chore_notes_all_authenticated" on chore_notes for all to authenticated using (true) with check (true);
+
+-- ── 긴급 메모 ─────────────────────────────────────────────────────────
+-- 특정 집안일이 아니라 홈 화면 전체에 띄우는 공지/긴급 메모. 항상 1개의 행만 존재한다(싱글톤).
+
+create table if not exists house_notes (
+  id smallint primary key default 1 check (id = 1),
+  author uuid not null references profiles(id),
+  message text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table house_notes enable row level security;
+
+drop policy if exists "house_notes_all_authenticated" on house_notes;
+create policy "house_notes_all_authenticated" on house_notes for all to authenticated using (true) with check (true);
