@@ -19,6 +19,11 @@ export async function getMyProfile(userId: string): Promise<Profile | null> {
   return data
 }
 
+export async function updateMyGender(userId: string, gender: 'female' | 'male'): Promise<void> {
+  const { error } = await supabase.from('profiles').update({ gender }).eq('id', userId)
+  if (error) throw error
+}
+
 export async function getAllProfiles(): Promise<Profile[]> {
   const { data, error } = await supabase.from('profiles').select('*').order('created_at')
   if (error) throw error

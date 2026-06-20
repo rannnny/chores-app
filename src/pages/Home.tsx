@@ -52,6 +52,10 @@ export default function Home() {
   }, [])
 
   const profileName = (id: string | null) => profiles.find((p) => p.id === id)?.display_name ?? '알 수 없음'
+  const profileEmoji = (id: string | null) => {
+    const gender = profiles.find((p) => p.id === id)?.gender
+    return gender === 'female' ? '👩' : gender === 'male' ? '👨' : ''
+  }
 
   const today = todayStr()
   const dueList = useMemo(
@@ -174,27 +178,30 @@ export default function Home() {
                 >
                   <div>
                     <p className="font-medium text-slate-900">{chore.name}</p>
-                    {chore.last_done_date && (
+                    {!doneOnSelected && chore.last_done_date && (
                       <p className={`text-xs ${overdue ? 'text-rose-500' : 'text-slate-400'}`}>
                         마지막 처리: {chore.last_done_date} ({profileName(chore.last_done_by)})
                         {overdue && ' · 기한 지남'}
                       </p>
                     )}
                   </div>
-                  <button
-                    onClick={() =>
-                      doneOnSelected && chore.last_log_id
-                        ? handleUndo(chore.last_log_id)
-                        : handleComplete(chore.id, selectedDate, '')
-                    }
-                    className={`rounded-full text-sm px-3 py-1.5 font-medium ${
-                      doneOnSelected
-                        ? 'bg-slate-100 hover:bg-slate-200 text-slate-400'
-                        : 'bg-teal-600 hover:bg-teal-500 text-white'
-                    }`}
-                  >
-                    {doneOnSelected ? '완료 ↩' : '처리'}
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    {doneOnSelected && <span className="text-lg">{profileEmoji(chore.last_done_by)}</span>}
+                    <button
+                      onClick={() =>
+                        doneOnSelected && chore.last_log_id
+                          ? handleUndo(chore.last_log_id)
+                          : handleComplete(chore.id, selectedDate, '')
+                      }
+                      className={`rounded-full text-sm px-3 py-1.5 font-medium ${
+                        doneOnSelected
+                          ? 'bg-slate-100 hover:bg-slate-200 text-slate-400'
+                          : 'bg-teal-600 hover:bg-teal-500 text-white'
+                      }`}
+                    >
+                      {doneOnSelected ? '완료 ↩' : '처리'}
+                    </button>
+                  </div>
                 </li>
               )
             })}

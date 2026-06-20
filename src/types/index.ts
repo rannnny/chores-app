@@ -1,6 +1,7 @@
 export interface Profile {
   id: string
   display_name: string
+  gender: 'female' | 'male' | null
   created_at: string
 }
 

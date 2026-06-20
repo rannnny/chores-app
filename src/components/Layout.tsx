@@ -6,6 +6,7 @@ const tabs = [
   { to: '/chores', label: '집안일', icon: '🧹' },
   { to: '/history', label: '이력', icon: '📜' },
   { to: '/stats', label: '통계', icon: '📊' },
+  { to: '/settings', label: '설정', icon: '⚙️' },
 ]
 
 export default function Layout() {

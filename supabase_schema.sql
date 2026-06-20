@@ -10,8 +10,11 @@ create extension if not exists "pgcrypto";
 create table if not exists profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   display_name text not null,
+  gender text check (gender is null or gender in ('female', 'male')),
   created_at timestamptz not null default now()
 );
+
+alter table profiles add column if not exists gender text check (gender is null or gender in ('female', 'male'));
 
 alter table profiles enable row level security;
 

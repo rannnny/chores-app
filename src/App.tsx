@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import Chores from './pages/Chores'
 import History from './pages/History'
 import Stats from './pages/Stats'
+import Settings from './pages/Settings'
 
 function Gate() {
   const { session, loading } = useAuth()
@@ -26,6 +27,7 @@ function Gate() {
         <Route path="chores" element={<Chores />} />
         <Route path="history" element={<History />} />
         <Route path="stats" element={<Stats />} />
+        <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
