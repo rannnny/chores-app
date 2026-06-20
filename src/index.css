@@ -1,0 +1,29 @@
+@import "tailwindcss";
+@import "@fontsource/noto-sans-kr/400.css";
+@import "@fontsource/noto-sans-kr/500.css";
+@import "@fontsource/noto-sans-kr/700.css";
+
+:root {
+  color-scheme: light;
+}
+
+html, body, #root {
+  min-height: 100svh;
+  margin: 0;
+  background: #f8fafc;
+  font-family: "Noto Sans KR", system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior-y: none;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+input, select, textarea {
+  font-size: 16px;
+}
