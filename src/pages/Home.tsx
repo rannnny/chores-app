@@ -188,22 +188,21 @@ export default function Home() {
             </div>
           </div>
         ) : houseNote ? (
-          <div className="bg-rose-50 border border-rose-200 rounded-2xl p-3 flex items-start justify-between gap-2">
-            <div>
-              <p className="text-xs font-semibold text-rose-500 mb-0.5">🚨 긴급 메모</p>
-              <p className="text-sm text-rose-700">{houseNote.message}</p>
-              <p className="text-xs text-rose-400 mt-0.5">{profileName(houseNote.author)}</p>
-            </div>
-            <div className="flex gap-1.5 shrink-0">
+          <div
+            title={profileName(houseNote.author)}
+            className="bg-white border-2 border-amber-400 rounded-2xl pl-3 pr-1.5 py-1.5 flex items-center justify-between gap-2"
+          >
+            <p className="text-sm font-bold text-slate-900 truncate">❗ {houseNote.message}</p>
+            <div className="flex gap-1 shrink-0">
               <button
                 onClick={startEditHouseNote}
-                className="rounded-full bg-rose-100 hover:bg-rose-200 text-rose-600 text-xs px-3 py-1.5"
+                className="rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs px-2.5 py-1"
               >
                 수정
               </button>
               <button
                 onClick={handleConfirmHouseNote}
-                className="rounded-full bg-rose-600 hover:bg-rose-500 text-white text-xs px-3 py-1.5 font-medium"
+                className="rounded-full bg-amber-400 hover:bg-amber-500 text-white text-xs px-2.5 py-1 font-bold"
               >
                 확인
               </button>
