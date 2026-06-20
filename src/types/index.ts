@@ -8,6 +8,7 @@ export interface Chore {
   id: string
   name: string
   period_days: number | null
+  due_date: string | null
   archived: boolean
   created_at: string
 }

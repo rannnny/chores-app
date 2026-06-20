@@ -26,14 +26,18 @@ create policy "profiles_update_own" on profiles for update to authenticated usin
 
 -- ── 집안일 ────────────────────────────────────────────────────────────
 -- period_days가 null이면 반복 없는 1회성 작업.
+-- due_date는 1회성 작업을 원하는 날짜에 할 일로 띄우기 위한 날짜(반복 작업은 사용하지 않음).
 
 create table if not exists chores (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   period_days integer check (period_days is null or period_days > 0),
+  due_date date,
   archived boolean not null default false,
   created_at timestamptz not null default now()
 );
+
+alter table chores add column if not exists due_date date;
 
 alter table chores enable row level security;
 

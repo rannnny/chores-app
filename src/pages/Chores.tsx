@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useToast } from '../components/Toast'
-import { archiveChore, createChore, getChoresWithStatus, updateChore } from '../lib/data'
+import { archiveChore, createChore, getChoresWithStatus, todayStr, updateChore } from '../lib/data'
 import type { ChoreWithStatus } from '../types/index'
 
 export default function Chores() {
@@ -26,8 +26,52 @@ export default function Chores() {
     load()
   }
 
+  const recurringChores = chores.filter((c) => c.period_days !== null)
+  const onceChores = chores.filter((c) => c.period_days === null)
+
+  function renderList(list: ChoreWithStatus[], emptyText: string) {
+    if (list.length === 0) {
+      return (
+        <p className="text-sm text-slate-400 bg-white rounded-2xl p-4 text-center border border-slate-100">
+          {emptyText}
+        </p>
+      )
+    }
+    return (
+      <ul className="space-y-2">
+        {list.map((chore) => (
+          <li
+            key={chore.id}
+            className="bg-white rounded-2xl p-3 flex items-center justify-between border border-slate-100"
+          >
+            <div>
+              <p className="font-medium text-slate-900">{chore.name}</p>
+              <p className="text-xs text-slate-400">
+                {chore.period_days ? `${chore.period_days}일마다 반복` : `예정일: ${chore.due_date ?? '-'}`}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setEditing(chore)}
+                className="rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm px-3 py-1.5"
+              >
+                수정
+              </button>
+              <button
+                onClick={() => handleArchive(chore.id)}
+                className="rounded-full bg-rose-50 hover:bg-rose-100 text-rose-500 text-sm px-3 py-1.5"
+              >
+                삭제
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
   return (
-    <div className="space-y-4 pt-4">
+    <div className="space-y-6 pt-4">
       <div className="flex items-center justify-between">
         <h2 className="font-semibold text-slate-900">등록된 집안일</h2>
         <button
@@ -40,40 +84,17 @@ export default function Chores() {
 
       {loading ? (
         <p className="text-slate-400 text-center mt-10">불러오는 중...</p>
-      ) : chores.length === 0 ? (
-        <p className="text-sm text-slate-400 bg-white rounded-2xl p-4 text-center border border-slate-100">
-          아직 등록된 집안일이 없어요. 위에서 추가해보세요!
-        </p>
       ) : (
-        <ul className="space-y-2">
-          {chores.map((chore) => (
-            <li
-              key={chore.id}
-              className="bg-white rounded-2xl p-3 flex items-center justify-between border border-slate-100"
-            >
-              <div>
-                <p className="font-medium text-slate-900">{chore.name}</p>
-                <p className="text-xs text-slate-400">
-                  {chore.period_days ? `${chore.period_days}일마다 반복` : '1회성 작업'}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setEditing(chore)}
-                  className="rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm px-3 py-1.5"
-                >
-                  수정
-                </button>
-                <button
-                  onClick={() => handleArchive(chore.id)}
-                  className="rounded-full bg-rose-50 hover:bg-rose-100 text-rose-500 text-sm px-3 py-1.5"
-                >
-                  삭제
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <>
+          <section className="space-y-2">
+            <h3 className="text-sm font-semibold text-slate-500">반복 작업</h3>
+            {renderList(recurringChores, '등록된 반복 작업이 없어요.')}
+          </section>
+          <section className="space-y-2">
+            <h3 className="text-sm font-semibold text-slate-500">1회성 작업</h3>
+            {renderList(onceChores, '등록된 1회성 작업이 없어요.')}
+          </section>
+        </>
       )}
 
       {editing && (
@@ -103,6 +124,7 @@ function ChoreFormModal({
   const [name, setName] = useState(chore?.name ?? '')
   const [recurring, setRecurring] = useState(chore ? chore.period_days !== null : true)
   const [periodDays, setPeriodDays] = useState(chore?.period_days ? String(chore.period_days) : '7')
+  const [dueDate, setDueDate] = useState(chore?.due_date ?? todayStr())
   const [saving, setSaving] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -111,9 +133,9 @@ function ChoreFormModal({
     setSaving(true)
     const period = recurring ? Number(periodDays) || 1 : null
     if (chore) {
-      await updateChore(chore.id, name.trim(), period)
+      await updateChore(chore.id, name.trim(), period, recurring ? null : dueDate)
     } else {
-      await createChore(name.trim(), period)
+      await createChore(name.trim(), period, recurring ? null : dueDate)
     }
     setSaving(false)
     showToast(chore ? '수정했어요' : '추가했어요')
@@ -162,7 +184,7 @@ function ChoreFormModal({
           </button>
         </div>
 
-        {recurring && (
+        {recurring ? (
           <div>
             <label className="text-xs text-slate-500 mb-1 block">처리 주기 (일)</label>
             <input
@@ -171,6 +193,17 @@ function ChoreFormModal({
               required
               value={periodDays}
               onChange={(e) => setPeriodDays(e.target.value)}
+              className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:border-teal-500"
+            />
+          </div>
+        ) : (
+          <div>
+            <label className="text-xs text-slate-500 mb-1 block">할 일로 띄울 날짜</label>
+            <input
+              type="date"
+              required
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
               className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:border-teal-500"
             />
           </div>

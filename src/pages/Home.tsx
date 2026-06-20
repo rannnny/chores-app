@@ -8,7 +8,6 @@ import {
   isSameDay,
   isSameMonth,
   isToday,
-  parseISO,
   startOfMonth,
   startOfWeek,
   subMonths,
@@ -38,7 +37,6 @@ export default function Home() {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
   const [month, setMonth] = useState(new Date())
-  const [target, setTarget] = useState<ChoreWithStatus | null>(null)
 
   async function load() {
     setLoading(true)
@@ -83,7 +81,6 @@ export default function Home() {
   async function handleComplete(choreId: string, doneDate: string, memo: string) {
     if (!session) return
     await logChoreDone(choreId, session.user.id, doneDate, memo || null)
-    setTarget(null)
     showToast('처리 완료! ✨')
     load()
   }
@@ -171,7 +168,7 @@ export default function Home() {
                     </p>
                   </div>
                   <button
-                    onClick={() => setTarget(chore)}
+                    onClick={() => handleComplete(chore.id, todayStr(), '')}
                     className="rounded-full bg-teal-600 hover:bg-teal-500 text-white text-sm px-3 py-1.5 font-medium"
                   >
                     처리
@@ -183,74 +180,7 @@ export default function Home() {
         )}
       </section>
 
-      {target && (
-        <CompleteModal
-          chore={target}
-          onCancel={() => setTarget(null)}
-          onConfirm={(date, memo) => handleComplete(target.id, date, memo)}
-        />
-      )}
-
       {!profile && <p className="text-xs text-slate-400 text-center">프로필 정보를 불러오는 중...</p>}
-    </div>
-  )
-}
-
-function CompleteModal({
-  chore,
-  onCancel,
-  onConfirm,
-}: {
-  chore: ChoreWithStatus
-  onCancel: () => void
-  onConfirm: (date: string, memo: string) => void
-}) {
-  const [date, setDate] = useState(todayStr())
-  const [memo, setMemo] = useState('')
-
-  return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center px-4 z-40" onClick={onCancel}>
-      <div
-        className="bg-white rounded-3xl p-5 w-full max-w-sm space-y-4 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="font-bold text-slate-900 text-lg">{chore.name} 처리</h3>
-        <div>
-          <label className="text-xs text-slate-500 mb-1 block">날짜</label>
-          <input
-            type="date"
-            value={date}
-            max={todayStr()}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:border-teal-500"
-          />
-        </div>
-        <div>
-          <label className="text-xs text-slate-500 mb-1 block">메모 (선택)</label>
-          <input
-            type="text"
-            value={memo}
-            placeholder="예: 세제 다 씀"
-            onChange={(e) => setMemo(e.target.value)}
-            className="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:border-teal-500"
-          />
-        </div>
-        {parseISO(date) > new Date() && <p className="text-xs text-rose-500">미래 날짜는 선택할 수 없어요.</p>}
-        <div className="flex gap-2">
-          <button
-            onClick={onCancel}
-            className="flex-1 rounded-xl bg-slate-100 hover:bg-slate-200 py-2.5 font-medium text-slate-600"
-          >
-            취소
-          </button>
-          <button
-            onClick={() => onConfirm(date, memo)}
-            className="flex-1 rounded-xl bg-teal-600 hover:bg-teal-500 py-2.5 font-medium text-white"
-          >
-            완료
-          </button>
-        </div>
-      </div>
     </div>
   )
 }

@@ -48,7 +48,7 @@ export async function getChoresWithStatus(includeArchived = false): Promise<Chor
     let nextDueDate: string | null
 
     if (chore.period_days === null) {
-      nextDueDate = lastLog ? null : format(new Date(chore.created_at), 'yyyy-MM-dd')
+      nextDueDate = lastLog ? null : chore.due_date ?? format(new Date(chore.created_at), 'yyyy-MM-dd')
     } else if (lastLog) {
       nextDueDate = format(addDays(new Date(lastLog.done_date), chore.period_days), 'yyyy-MM-dd')
     } else {
@@ -64,13 +64,23 @@ export async function getChoresWithStatus(includeArchived = false): Promise<Chor
   })
 }
 
-export async function createChore(name: string, periodDays: number | null): Promise<void> {
-  const { error } = await supabase.from('chores').insert({ name, period_days: periodDays })
+export async function createChore(name: string, periodDays: number | null, dueDate: string | null): Promise<void> {
+  const { error } = await supabase
+    .from('chores')
+    .insert({ name, period_days: periodDays, due_date: periodDays === null ? dueDate : null })
   if (error) throw error
 }
 
-export async function updateChore(id: string, name: string, periodDays: number | null): Promise<void> {
-  const { error } = await supabase.from('chores').update({ name, period_days: periodDays }).eq('id', id)
+export async function updateChore(
+  id: string,
+  name: string,
+  periodDays: number | null,
+  dueDate: string | null
+): Promise<void> {
+  const { error } = await supabase
+    .from('chores')
+    .update({ name, period_days: periodDays, due_date: periodDays === null ? dueDate : null })
+    .eq('id', id)
   if (error) throw error
 }
 
