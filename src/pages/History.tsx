@@ -26,7 +26,11 @@ export default function History() {
     load()
   }, [])
 
-  const choreName = (id: string) => chores.find((c) => c.id === id)?.name ?? '(삭제된 집안일)'
+  const choreName = (id: string) => {
+    const chore = chores.find((c) => c.id === id)
+    if (!chore) return '(삭제된 집안일)'
+    return `${chore.name} (${chore.period_days ? `${chore.period_days}일마다` : '1회성'})`
+  }
   const profileName = (id: string) => profiles.find((p) => p.id === id)?.display_name ?? '알 수 없음'
 
   const filteredLogs = useMemo(
