@@ -13,10 +13,23 @@ import {
   startOfWeek,
   subMonths,
 } from 'date-fns'
+import { y2018, y2019, y2020, y2021, y2022, y2023, y2024, y2025, y2026 } from '@hyunbinseo/holidays-kr'
 import { useAuth } from '../lib/AuthContext'
 import { useToast } from '../components/Toast'
 import { getAllProfiles, getChoresWithStatus, logChoreDone, todayStr } from '../lib/data'
 import type { ChoreWithStatus, Profile } from '../types/index'
+
+const HOLIDAYS: Record<string, readonly string[]> = {
+  ...y2018,
+  ...y2019,
+  ...y2020,
+  ...y2021,
+  ...y2022,
+  ...y2023,
+  ...y2024,
+  ...y2025,
+  ...y2026,
+}
 
 export default function Home() {
   const { session, profile } = useAuth()
@@ -89,9 +102,11 @@ export default function Home() {
             ›
           </button>
         </div>
-        <div className="grid grid-cols-7 gap-1 text-center text-xs text-slate-400 mb-1">
-          {['일', '월', '화', '수', '목', '금', '토'].map((d) => (
-            <div key={d}>{d}</div>
+        <div className="grid grid-cols-7 gap-1 text-center text-xs mb-1">
+          {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
+            <div key={d} className={i === 0 ? 'text-rose-500' : i === 6 ? 'text-blue-500' : 'text-slate-400'}>
+              {d}
+            </div>
           ))}
         </div>
         <div className="grid grid-cols-7 gap-1">
@@ -99,15 +114,22 @@ export default function Home() {
             const key = format(day, 'yyyy-MM-dd')
             const dueChores = dueDatesInMonth.get(key) ?? []
             const isPast = key < today
+            const dow = day.getDay()
+            const holidayNames = HOLIDAYS[key]
+            const dateColor =
+              !isSameMonth(day, month)
+                ? 'text-slate-300'
+                : holidayNames || dow === 0
+                  ? 'text-rose-500'
+                  : dow === 6
+                    ? 'text-blue-500'
+                    : 'text-slate-700'
             return (
               <div
                 key={key}
+                title={holidayNames?.join(', ')}
                 className={`aspect-square rounded-xl flex flex-col items-center justify-center text-xs ${
-                  !isSameMonth(day, month)
-                    ? 'text-slate-300'
-                    : isToday(day)
-                      ? 'bg-teal-600 text-white font-semibold'
-                      : 'text-slate-700'
+                  isToday(day) ? 'bg-teal-600 text-white font-semibold' : dateColor
                 }`}
               >
                 <span>{format(day, 'd')}</span>
