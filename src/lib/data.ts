@@ -59,6 +59,7 @@ export async function getChoresWithStatus(includeArchived = false): Promise<Chor
       ...chore,
       last_done_date: lastLog?.done_date ?? null,
       last_done_by: lastLog?.done_by ?? null,
+      last_log_id: lastLog?.id ?? null,
       next_due_date: nextDueDate,
     }
   })
@@ -118,6 +119,11 @@ export async function getAllLogs(): Promise<ChoreLog[]> {
     .order('done_date', { ascending: false })
   if (error) throw error
   return data ?? []
+}
+
+export async function updateLogMemo(id: string, memo: string | null): Promise<void> {
+  const { error } = await supabase.from('chore_logs').update({ memo }).eq('id', id)
+  if (error) throw error
 }
 
 export async function deleteLog(id: string): Promise<void> {

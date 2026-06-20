@@ -25,5 +25,6 @@ export interface ChoreLog {
 export interface ChoreWithStatus extends Chore {
   last_done_date: string | null
   last_done_by: string | null
+  last_log_id: string | null
   next_due_date: string | null
 }

@@ -15,7 +15,7 @@ import {
 import { y2018, y2019, y2020, y2021, y2022, y2023, y2024, y2025, y2026 } from '@hyunbinseo/holidays-kr'
 import { useAuth } from '../lib/AuthContext'
 import { useToast } from '../components/Toast'
-import { getAllProfiles, getChoresWithStatus, logChoreDone, todayStr } from '../lib/data'
+import { deleteLog, getAllProfiles, getChoresWithStatus, logChoreDone, todayStr } from '../lib/data'
 import type { ChoreWithStatus, Profile } from '../types/index'
 
 const HOLIDAYS: Record<string, readonly string[]> = {
@@ -56,8 +56,8 @@ export default function Home() {
   const dueList = useMemo(
     () =>
       chores
-        .filter((c) => c.next_due_date && c.next_due_date <= today)
-        .sort((a, b) => (a.next_due_date! < b.next_due_date! ? -1 : 1)),
+        .filter((c) => (c.next_due_date && c.next_due_date <= today) || c.last_done_date === today)
+        .sort((a, b) => (a.next_due_date ?? '9999-99-99') < (b.next_due_date ?? '9999-99-99') ? -1 : 1),
     [chores, today]
   )
 
@@ -82,6 +82,13 @@ export default function Home() {
     if (!session) return
     await logChoreDone(choreId, session.user.id, doneDate, memo || null)
     showToast('처리 완료! ✨')
+    load()
+  }
+
+  async function handleUndo(logId: string) {
+    if (!confirm('처리를 취소할까요?')) return
+    await deleteLog(logId)
+    showToast('처리를 취소했어요')
     load()
   }
 
@@ -152,7 +159,8 @@ export default function Home() {
         ) : (
           <ul className="space-y-2">
             {dueList.map((chore) => {
-              const overdue = chore.next_due_date! < today
+              const doneToday = chore.last_done_date === today
+              const overdue = !doneToday && !!chore.next_due_date && chore.next_due_date < today
               return (
                 <li
                   key={chore.id}
@@ -168,10 +176,18 @@ export default function Home() {
                     </p>
                   </div>
                   <button
-                    onClick={() => handleComplete(chore.id, todayStr(), '')}
-                    className="rounded-full bg-teal-600 hover:bg-teal-500 text-white text-sm px-3 py-1.5 font-medium"
+                    onClick={() =>
+                      doneToday && chore.last_log_id
+                        ? handleUndo(chore.last_log_id)
+                        : handleComplete(chore.id, todayStr(), '')
+                    }
+                    className={`rounded-full text-sm px-3 py-1.5 font-medium ${
+                      doneToday
+                        ? 'bg-slate-100 hover:bg-slate-200 text-slate-400'
+                        : 'bg-teal-600 hover:bg-teal-500 text-white'
+                    }`}
                   >
-                    처리
+                    {doneToday ? '완료 ↩' : '처리'}
                   </button>
                 </li>
               )

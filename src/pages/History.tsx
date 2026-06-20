@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../lib/AuthContext'
 import { useToast } from '../components/Toast'
-import { deleteLog, getAllLogs, getAllProfiles, getChoresWithStatus } from '../lib/data'
+import { deleteLog, getAllLogs, getAllProfiles, getChoresWithStatus, updateLogMemo } from '../lib/data'
 import type { Chore, ChoreLog, Profile } from '../types/index'
 
 export default function History() {
@@ -12,6 +12,8 @@ export default function History() {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
   const [choreFilter, setChoreFilter] = useState('all')
+  const [editingMemoId, setEditingMemoId] = useState<string | null>(null)
+  const [memoDraft, setMemoDraft] = useState('')
 
   async function load() {
     setLoading(true)
@@ -41,6 +43,18 @@ export default function History() {
     load()
   }
 
+  function startEditMemo(log: ChoreLog) {
+    setEditingMemoId(log.id)
+    setMemoDraft(log.memo ?? '')
+  }
+
+  async function handleSaveMemo(id: string) {
+    await updateLogMemo(id, memoDraft.trim() || null)
+    setEditingMemoId(null)
+    showToast('메모를 저장했어요')
+    load()
+  }
+
   return (
     <div className="space-y-4 pt-4">
       <h2 className="font-semibold text-slate-900">처리 이력</h2>
@@ -66,27 +80,61 @@ export default function History() {
         </p>
       ) : (
         <ul className="space-y-2">
-          {filteredLogs.map((log) => (
-            <li key={log.id} className="bg-white rounded-2xl p-3 border border-slate-100">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="font-medium text-slate-900">{choreName(log.chore_id)}</p>
-                  <p className="text-xs text-slate-400">
-                    {log.done_date} · {profileName(log.done_by)}
-                  </p>
-                  {log.memo && <p className="text-sm text-slate-600 mt-1">{log.memo}</p>}
+          {filteredLogs.map((log) => {
+            const isMine = log.done_by === session?.user.id
+            const isEditing = editingMemoId === log.id
+            return (
+              <li key={log.id} className="bg-white rounded-2xl p-3 border border-slate-100">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1">
+                    <p className="font-medium text-slate-900">{choreName(log.chore_id)}</p>
+                    <p className="text-xs text-slate-400">
+                      {log.done_date} · {profileName(log.done_by)}
+                    </p>
+                    {isEditing ? (
+                      <div className="flex gap-2 mt-2">
+                        <input
+                          type="text"
+                          autoFocus
+                          value={memoDraft}
+                          placeholder="메모 입력"
+                          onChange={(e) => setMemoDraft(e.target.value)}
+                          className="flex-1 rounded-xl border border-slate-300 px-3 py-1.5 text-sm outline-none focus:border-teal-500"
+                        />
+                        <button
+                          onClick={() => handleSaveMemo(log.id)}
+                          className="rounded-full bg-teal-600 hover:bg-teal-500 text-white text-xs px-3 py-1.5 font-medium shrink-0"
+                        >
+                          저장
+                        </button>
+                        <button
+                          onClick={() => setEditingMemoId(null)}
+                          className="rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs px-3 py-1.5 shrink-0"
+                        >
+                          취소
+                        </button>
+                      </div>
+                    ) : (
+                      <p
+                        onClick={() => isMine && startEditMemo(log)}
+                        className={`text-sm mt-1 ${log.memo ? 'text-slate-600' : 'text-slate-300'} ${isMine ? 'cursor-pointer' : ''}`}
+                      >
+                        {log.memo || (isMine ? '메모 추가하기' : '')}
+                      </p>
+                    )}
+                  </div>
+                  {isMine && !isEditing && (
+                    <button
+                      onClick={() => handleDelete(log.id)}
+                      className="text-xs text-slate-300 hover:text-rose-500 shrink-0"
+                    >
+                      삭제
+                    </button>
+                  )}
                 </div>
-                {log.done_by === session?.user.id && (
-                  <button
-                    onClick={() => handleDelete(log.id)}
-                    className="text-xs text-slate-300 hover:text-rose-500 shrink-0"
-                  >
-                    삭제
-                  </button>
-                )}
-              </div>
-            </li>
-          ))}
+              </li>
+            )
+          })}
         </ul>
       )}
     </div>

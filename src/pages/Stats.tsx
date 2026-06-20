@@ -1,18 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
-import { addMonths, format, subMonths } from 'date-fns'
-import { getAllLogs, getAllProfiles } from '../lib/data'
-import type { ChoreLog, Profile } from '../types/index'
+import { addMonths, format, getDaysInMonth, subMonths } from 'date-fns'
+import { getAllLogs, getAllProfiles, getChoresWithStatus } from '../lib/data'
+import type { Chore, ChoreLog, Profile } from '../types/index'
 
 export default function Stats() {
   const [logs, setLogs] = useState<ChoreLog[]>([])
   const [profiles, setProfiles] = useState<Profile[]>([])
+  const [chores, setChores] = useState<Chore[]>([])
   const [loading, setLoading] = useState(true)
   const [month, setMonth] = useState(new Date())
 
   useEffect(() => {
-    Promise.all([getAllLogs(), getAllProfiles()]).then(([l, p]) => {
+    Promise.all([getAllLogs(), getAllProfiles(), getChoresWithStatus(true)]).then(([l, p, c]) => {
       setLogs(l)
       setProfiles(p)
+      setChores(c)
       setLoading(false)
     })
   }, [])
@@ -29,6 +31,19 @@ export default function Stats() {
   }, [logs, monthKey])
 
   const total = useMemo(() => [...counts.values()].reduce((a, b) => a + b, 0), [counts])
+
+  const daysInMonth = getDaysInMonth(month)
+
+  const choreStats = useMemo(() => {
+    return chores.map((chore) => {
+      const count = logs.filter((l) => l.chore_id === chore.id && l.done_date.startsWith(monthKey)).length
+      const expected = chore.period_days ? Math.max(1, Math.round(daysInMonth / chore.period_days)) : 1
+      return { chore, count, expected, onTrack: count >= expected }
+    })
+  }, [chores, logs, monthKey, daysInMonth])
+
+  const recurringStats = choreStats.filter((s) => s.chore.period_days !== null)
+  const onceStats = choreStats.filter((s) => s.chore.period_days === null)
 
   if (loading) return <p className="text-slate-400 mt-10 text-center">불러오는 중...</p>
 
@@ -67,6 +82,55 @@ export default function Stats() {
           })}
         </ul>
       )}
+
+      <section className="space-y-2">
+        <h3 className="text-sm font-semibold text-slate-500 pt-2">집안일별 처리 현황 (반복)</h3>
+        {recurringStats.length === 0 ? (
+          <p className="text-sm text-slate-400 bg-white rounded-2xl p-4 text-center border border-slate-100">
+            등록된 반복 작업이 없어요.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {recurringStats.map(({ chore, count, expected, onTrack }) => (
+              <li
+                key={chore.id}
+                className="bg-white rounded-2xl p-3 border border-slate-100 flex items-center justify-between"
+              >
+                <div>
+                  <p className="font-medium text-slate-900">{chore.name}</p>
+                  <p className="text-xs text-slate-400">{chore.period_days}일마다 반복 · 예상 {expected}회</p>
+                </div>
+                <p className={`text-sm font-semibold ${onTrack ? 'text-teal-600' : 'text-rose-500'}`}>
+                  {count}회 {onTrack ? '✅' : '⚠️'}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="space-y-2">
+        <h3 className="text-sm font-semibold text-slate-500 pt-2">집안일별 처리 현황 (1회성)</h3>
+        {onceStats.length === 0 ? (
+          <p className="text-sm text-slate-400 bg-white rounded-2xl p-4 text-center border border-slate-100">
+            등록된 1회성 작업이 없어요.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {onceStats.map(({ chore, count }) => (
+              <li
+                key={chore.id}
+                className="bg-white rounded-2xl p-3 border border-slate-100 flex items-center justify-between"
+              >
+                <p className="font-medium text-slate-900">{chore.name}</p>
+                <p className={`text-sm font-semibold ${count > 0 ? 'text-teal-600' : 'text-slate-400'}`}>
+                  {count > 0 ? '처리완료 ✅' : '미처리'}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   )
 }
