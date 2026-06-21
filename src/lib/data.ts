@@ -24,6 +24,11 @@ export async function updateMyEmoji(userId: string, emoji: string): Promise<void
   if (error) throw error
 }
 
+export async function updateMyDisplayName(userId: string, displayName: string): Promise<void> {
+  const { error } = await supabase.from('profiles').update({ display_name: displayName }).eq('id', userId)
+  if (error) throw error
+}
+
 export async function getAllProfiles(): Promise<Profile[]> {
   const { data, error } = await supabase.from('profiles').select('*').order('created_at')
   if (error) throw error

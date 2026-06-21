@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { addMonths, format, getDaysInMonth, subMonths } from 'date-fns'
+import { addDays, addMonths, format, getDaysInMonth, subMonths } from 'date-fns'
 import { getAllLogs, getAllProfiles, getChoresWithStatus } from '../lib/data'
 import type { Chore, ChoreLog, Profile } from '../types/index'
 
@@ -38,7 +38,21 @@ export default function Stats() {
     return chores.map((chore) => {
       const count = logs.filter((l) => l.chore_id === chore.id && l.done_date.startsWith(monthKey)).length
       const expected = chore.period_days ? Math.max(1, Math.round(daysInMonth / chore.period_days)) : 1
-      return { chore, count, expected, onTrack: count >= expected }
+
+      let delayed = 0
+      if (chore.period_days) {
+        const choreLogs = logs
+          .filter((l) => l.chore_id === chore.id)
+          .sort((a, b) => (a.done_date < b.done_date ? -1 : 1))
+        for (let i = 1; i < choreLogs.length; i++) {
+          const cur = choreLogs[i]
+          if (!cur.done_date.startsWith(monthKey)) continue
+          const expectedDate = format(addDays(new Date(choreLogs[i - 1].done_date), chore.period_days), 'yyyy-MM-dd')
+          if (cur.done_date > expectedDate) delayed++
+        }
+      }
+
+      return { chore, count, expected, onTrack: count >= expected, delayed }
     })
   }, [chores, logs, monthKey, daysInMonth])
 
@@ -64,14 +78,16 @@ export default function Stats() {
       {total === 0 ? (
         <p className="text-sm text-slate-400 py-6 text-center">이 달에는 처리 기록이 없어요.</p>
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
           {profiles.map((p) => {
             const count = counts.get(p.id) ?? 0
             const pct = total > 0 ? Math.round((count / total) * 100) : 0
             return (
-              <li key={p.id} className="py-3">
+              <li key={p.id} className="py-3 px-3">
                 <div className="flex items-center justify-between mb-1.5">
-                  <p className="font-medium text-slate-900">{p.display_name}</p>
+                  <p className="font-medium text-slate-900">
+                    {p.emoji ? `${p.emoji}(${p.display_name})` : p.display_name}
+                  </p>
                   <p className="text-sm text-slate-500">
                     {count}건 ({pct}%)
                   </p>
@@ -92,13 +108,14 @@ export default function Stats() {
         {recurringStats.length === 0 ? (
           <p className="text-sm text-slate-400 py-6 text-center">등록된 반복 작업이 없어요.</p>
         ) : (
-          <ul className="divide-y divide-slate-100">
-            {recurringStats.map(({ chore, count, expected, onTrack }) => (
-              <li key={chore.id} className="py-3 flex items-center justify-between">
+          <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
+            {recurringStats.map(({ chore, count, expected, onTrack, delayed }) => (
+              <li key={chore.id} className="py-3 px-3 flex items-center justify-between">
                 <div>
                   <p className="font-medium text-slate-900">{chore.name}</p>
                   <p className="text-xs text-slate-400">
                     {chore.period_days}일마다 반복 · 예상 {expected}회
+                    {delayed > 0 && <span className="text-amber-500"> · 지연 {delayed}회</span>}
                   </p>
                 </div>
                 <p className={`text-sm font-semibold ${onTrack ? 'text-slate-900' : 'text-rose-500'}`}>
@@ -117,9 +134,9 @@ export default function Stats() {
         {onceStats.length === 0 ? (
           <p className="text-sm text-slate-400 py-6 text-center">등록된 1회성 작업이 없어요.</p>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
             {onceStats.map(({ chore, count }) => (
-              <li key={chore.id} className="py-3 flex items-center justify-between">
+              <li key={chore.id} className="py-3 px-3 flex items-center justify-between">
                 <p className="font-medium text-slate-900">{chore.name}</p>
                 <p className={`text-sm font-semibold ${count > 0 ? 'text-slate-900' : 'text-slate-400'}`}>
                   {count > 0 ? '처리완료 ✅' : '미처리'}

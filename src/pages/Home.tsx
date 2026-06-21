@@ -17,18 +17,15 @@ import { useAuth } from '../lib/AuthContext'
 import { useToast } from '../components/Toast'
 import {
   clearHouseNote,
-  clearNote,
   deleteLog,
-  getAllNotes,
   getAllProfiles,
   getChoresWithStatus,
   getHouseNote,
   logChoreDone,
   setHouseNote,
-  setNote,
   todayStr,
 } from '../lib/data'
-import type { ChoreNote, ChoreWithStatus, HouseNote, Profile } from '../types/index'
+import type { ChoreWithStatus, HouseNote, Profile } from '../types/index'
 
 const HOLIDAYS: Record<string, readonly string[]> = {
   ...y2018,
@@ -47,27 +44,22 @@ export default function Home() {
   const showToast = useToast()
   const [chores, setChores] = useState<ChoreWithStatus[]>([])
   const [profiles, setProfiles] = useState<Profile[]>([])
-  const [notes, setNotes] = useState<ChoreNote[]>([])
   const [houseNote, setHouseNoteState] = useState<HouseNote | null>(null)
   const [loading, setLoading] = useState(true)
   const [month, setMonth] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState(todayStr())
-  const [noteEditingId, setNoteEditingId] = useState<string | null>(null)
-  const [noteDraft, setNoteDraft] = useState('')
   const [editingHouseNote, setEditingHouseNote] = useState(false)
   const [houseNoteDraft, setHouseNoteDraft] = useState('')
 
   async function load() {
     setLoading(true)
-    const [c, p, n, h] = await Promise.all([
+    const [c, p, h] = await Promise.all([
       getChoresWithStatus(),
       getAllProfiles(),
-      getAllNotes().catch(() => []),
       getHouseNote().catch(() => null),
     ])
     setChores(c)
     setProfiles(p)
-    setNotes(n)
     setHouseNoteState(h)
     setLoading(false)
   }
@@ -116,27 +108,6 @@ export default function Home() {
     if (!confirm('처리를 취소할까요?')) return
     await deleteLog(logId)
     showToast('처리를 취소했어요')
-    load()
-  }
-
-  function startEditNote(chore: ChoreWithStatus, existing: ChoreNote | undefined) {
-    setNoteEditingId(chore.id)
-    setNoteDraft(existing?.message ?? '')
-  }
-
-  async function handleSaveNote(choreId: string) {
-    if (!session) return
-    if (!noteDraft.trim()) {
-      await clearNote(choreId)
-    } else {
-      await setNote(choreId, session.user.id, noteDraft.trim())
-    }
-    setNoteEditingId(null)
-    load()
-  }
-
-  async function handleClearNote(choreId: string) {
-    await clearNote(choreId)
     load()
   }
 
@@ -284,14 +255,12 @@ export default function Home() {
             {selectedDate === today ? '오늘은 할 일이 없어요 🎉' : '이 날에는 할 일이 없어요'}
           </p>
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
             {dueList.map((chore) => {
               const doneOnSelected = chore.last_done_date === selectedDate
               const overdue = !doneOnSelected && !!chore.next_due_date && chore.next_due_date < selectedDate
-              const note = notes.find((n) => n.chore_id === chore.id)
-              const isEditingNote = noteEditingId === chore.id
               return (
-                <li key={chore.id} className="py-3 space-y-2">
+                <li key={chore.id} className="py-3 px-3">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-slate-900">{chore.name}</p>
@@ -320,58 +289,6 @@ export default function Home() {
                       </button>
                     </div>
                   </div>
-
-                  {isEditingNote ? (
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        autoFocus
-                        value={noteDraft}
-                        placeholder="예: 오늘 바빠서 못 했어, 내일 부탁해"
-                        onChange={(e) => setNoteDraft(e.target.value)}
-                        className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-slate-900"
-                      />
-                      <button
-                        onClick={() => handleSaveNote(chore.id)}
-                        className="rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs px-3 py-1.5 font-medium shrink-0"
-                      >
-                        저장
-                      </button>
-                      <button
-                        onClick={() => setNoteEditingId(null)}
-                        className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs px-3 py-1.5 shrink-0"
-                      >
-                        취소
-                      </button>
-                    </div>
-                  ) : note ? (
-                    <div className="flex items-center justify-between gap-2 bg-slate-50 rounded-lg px-3 py-1.5">
-                      <p className="text-xs text-slate-500">
-                        💬 {profileName(note.author)}: {note.message}
-                      </p>
-                      <div className="flex gap-2 shrink-0">
-                        <button
-                          onClick={() => startEditNote(chore, note)}
-                          className="text-xs text-slate-400 hover:text-slate-700"
-                        >
-                          수정
-                        </button>
-                        <button
-                          onClick={() => handleClearNote(chore.id)}
-                          className="text-xs text-slate-400 hover:text-slate-700"
-                        >
-                          지우기
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => startEditNote(chore, undefined)}
-                      className="text-xs text-slate-300 hover:text-slate-500"
-                    >
-                      + 메모 남기기
-                    </button>
-                  )}
                 </li>
               )
             })}

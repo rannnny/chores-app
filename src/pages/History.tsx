@@ -61,29 +61,34 @@ export default function History() {
     <div className="space-y-4 pt-4">
       <h2 className="text-lg font-semibold text-slate-900 tracking-tight">처리 이력</h2>
 
-      <select
-        value={choreFilter}
-        onChange={(e) => setChoreFilter(e.target.value)}
-        className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-slate-900 bg-white text-sm"
-      >
-        <option value="all">전체 집안일</option>
-        {chores.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </select>
+      <div className="relative">
+        <select
+          value={choreFilter}
+          onChange={(e) => setChoreFilter(e.target.value)}
+          className="w-full appearance-none rounded-lg border border-slate-200 pl-3 pr-9 py-2.5 outline-none focus:border-slate-900 bg-white text-sm text-slate-900"
+        >
+          <option value="all">전체 집안일</option>
+          {chores.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">
+          ▾
+        </span>
+      </div>
 
       {loading ? (
         <p className="text-slate-400 text-center mt-10">불러오는 중...</p>
       ) : filteredLogs.length === 0 ? (
         <p className="text-sm text-slate-400 py-10 text-center">처리 기록이 없어요.</p>
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
           {filteredLogs.map((log) => {
             const isEditing = editingMemoId === log.id
             return (
-              <li key={log.id} className="py-3">
+              <li key={log.id} className="py-3 px-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
                     <p className="font-medium text-slate-900">{choreName(log.chore_id)}</p>
@@ -118,12 +123,18 @@ export default function History() {
                     )}
                   </div>
                   {!isEditing && (
-                    <div className="flex gap-3 text-xs shrink-0">
-                      <button onClick={() => startEditMemo(log)} className="text-slate-400 hover:text-slate-900">
+                    <div className="flex gap-1.5 text-xs shrink-0">
+                      <button
+                        onClick={() => startEditMemo(log)}
+                        className="rounded-md border border-slate-200 text-slate-500 hover:border-slate-900 hover:text-slate-900 px-2 py-1"
+                      >
                         메모
                       </button>
-                      <button onClick={() => handleRestore(log.id)} className="text-slate-400 hover:text-rose-500">
-                        복원
+                      <button
+                        onClick={() => handleRestore(log.id)}
+                        className="rounded-md border border-slate-200 text-slate-500 hover:border-rose-400 hover:text-rose-500 px-2 py-1"
+                      >
+                        취소
                       </button>
                     </div>
                   )}

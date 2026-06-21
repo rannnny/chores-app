@@ -34,9 +34,9 @@ export default function Chores() {
       return <p className="text-sm text-slate-400 py-6 text-center">{emptyText}</p>
     }
     return (
-      <ul className="divide-y divide-slate-100">
+      <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
         {list.map((chore) => (
-          <li key={chore.id} className="py-3 flex items-center justify-between">
+          <li key={chore.id} className="py-3 px-3 flex items-center justify-between">
             <div>
               <p className="font-medium text-slate-900">{chore.name}</p>
               <p className="text-xs text-slate-400">
