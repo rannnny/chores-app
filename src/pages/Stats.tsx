@@ -108,9 +108,9 @@ export default function Stats() {
         ) : (
           <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm">
             <colgroup>
-              <col className="w-1/2" />
-              <col className="w-[30%]" />
-              <col className="w-[20%]" />
+              <col className="w-[36%]" />
+              <col className="w-[26%]" />
+              <col className="w-[38%]" />
             </colgroup>
             <thead>
               <tr className="bg-slate-50 text-center text-xs text-slate-400">
@@ -144,9 +144,9 @@ export default function Stats() {
         ) : (
           <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm">
             <colgroup>
-              <col className="w-1/2" />
-              <col className="w-[30%]" />
-              <col className="w-[20%]" />
+              <col className="w-[36%]" />
+              <col className="w-[26%]" />
+              <col className="w-[38%]" />
             </colgroup>
             <thead>
               <tr className="bg-slate-50 text-center text-xs text-slate-400">
