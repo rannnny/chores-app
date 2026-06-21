@@ -113,7 +113,6 @@ export default function Home() {
   }
 
   async function handleUndo(logId: string) {
-    if (!confirm('처리를 취소할까요?')) return
     await deleteLog(logId)
     showToast('처리를 취소했어요')
     load()
@@ -167,7 +166,7 @@ export default function Home() {
             onClick={startEditHouseNote}
             className="h-8 w-full flex items-center justify-end text-xs text-slate-300 hover:text-slate-500"
           >
-            + 긴급 메모 남기기
+            + 긴급메모
           </button>
         )}
       </section>
