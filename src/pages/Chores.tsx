@@ -37,7 +37,7 @@ export default function Chores() {
       <table className="w-full border border-slate-200 rounded-lg overflow-hidden text-sm">
         <thead>
           <tr className="bg-slate-50 text-center text-xs text-slate-400">
-            <th className="py-2 px-3 font-medium">이름</th>
+            <th className="py-2 px-3 font-medium">구분</th>
             <th className="py-2 px-3 font-medium">주기</th>
             <th className="py-2 px-3 font-medium">관리</th>
           </tr>
@@ -93,7 +93,7 @@ export default function Chores() {
   return (
     <div className="space-y-6 pt-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug">등록된 집안일</h2>
+        <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug">집안일 목록</h2>
         <button
           onClick={() => setEditing('new')}
           className="rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm px-3 py-1.5 font-medium"
