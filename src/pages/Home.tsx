@@ -187,7 +187,7 @@ export default function Home() {
               value={houseNoteDraft}
               placeholder="예: 가스 점검 내일 오전 10시 방문"
               onChange={(e) => setHouseNoteDraft(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-900"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#6b4226]"
             />
             <div className="flex gap-2">
               <button
@@ -198,7 +198,7 @@ export default function Home() {
               </button>
               <button
                 onClick={handleSaveHouseNote}
-                className="flex-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white py-2.5 font-medium"
+                className="flex-1 rounded-lg bg-[#6b4226] hover:bg-[#54341e] text-white py-2.5 font-medium"
               >
                 저장
               </button>
@@ -254,8 +254,8 @@ export default function Home() {
                       title={holidayNames?.join(', ')}
                       onClick={() => setSelectedDate(key)}
                       className={`aspect-square rounded-lg flex flex-col items-center pt-1.5 text-xs ${
-                        isToday(day) ? 'bg-slate-900 text-white font-semibold' : dateColor
-                      } ${isSelected && !isToday(day) ? 'ring-1 ring-slate-900' : ''}`}
+                        isToday(day) ? 'bg-[#6b4226] text-white font-semibold' : dateColor
+                      } ${isSelected && !isToday(day) ? 'ring-1 ring-[#6b4226]' : ''}`}
                     >
                       <span>{format(day, 'd')}</span>
                       {dueChores.length > 0 ? (
@@ -316,7 +316,7 @@ export default function Home() {
                       className={`rounded-lg text-sm px-3 py-1.5 font-medium ${
                         doneOnSelected
                           ? 'bg-slate-100 hover:bg-slate-200 text-slate-400'
-                          : 'bg-slate-900 hover:bg-slate-800 text-white'
+                          : 'bg-[#6b4226] hover:bg-[#54341e] text-white'
                       }`}
                     >
                       {doneOnSelected ? '완료 ↩' : '처리'}

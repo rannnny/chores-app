@@ -96,7 +96,7 @@ export default function Chores() {
         <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug">집안일 목록</h2>
         <button
           onClick={() => setEditing('new')}
-          className="rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm px-3 py-1.5 font-medium"
+          className="rounded-lg bg-[#6b4226] hover:bg-[#54341e] text-white text-sm px-3 py-1.5 font-medium"
         >
           + 추가
         </button>
@@ -183,7 +183,7 @@ function ChoreFormModal({
             value={name}
             placeholder="예: 화장실 청소"
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-slate-900"
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#6b4226]"
           />
         </div>
 
@@ -192,7 +192,7 @@ function ChoreFormModal({
             type="button"
             onClick={() => setRecurring(true)}
             className={`flex-1 rounded-lg py-2 text-sm font-medium ${
-              recurring ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500'
+              recurring ? 'bg-[#6b4226] text-white' : 'bg-slate-100 text-slate-500'
             }`}
           >
             🔁 반복 작업
@@ -201,7 +201,7 @@ function ChoreFormModal({
             type="button"
             onClick={() => setRecurring(false)}
             className={`flex-1 rounded-lg py-2 text-sm font-medium ${
-              !recurring ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500'
+              !recurring ? 'bg-[#6b4226] text-white' : 'bg-slate-100 text-slate-500'
             }`}
           >
             <span className="grayscale opacity-70">✅</span> 1회성 작업
@@ -217,7 +217,7 @@ function ChoreFormModal({
               required
               value={periodDays}
               onChange={(e) => setPeriodDays(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-slate-900"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#6b4226]"
             />
           </div>
         ) : (
@@ -228,7 +228,7 @@ function ChoreFormModal({
               required
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-slate-900"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#6b4226]"
             />
           </div>
         )}
@@ -244,7 +244,7 @@ function ChoreFormModal({
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 py-2.5 font-medium text-white"
+            className="flex-1 rounded-lg bg-[#6b4226] hover:bg-[#54341e] disabled:opacity-50 py-2.5 font-medium text-white"
           >
             {saving ? '저장 중...' : '저장'}
           </button>

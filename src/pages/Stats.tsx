@@ -93,7 +93,7 @@ export default function Stats() {
                   </p>
                 </div>
                 <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                  <div className="h-full bg-slate-900" style={{ width: `${pct}%` }} />
+                  <div className="h-full bg-[#6b4226]" style={{ width: `${pct}%` }} />
                 </div>
               </li>
             )

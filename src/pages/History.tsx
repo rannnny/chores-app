@@ -65,7 +65,7 @@ export default function History() {
         <select
           value={choreFilter}
           onChange={(e) => setChoreFilter(e.target.value)}
-          className="w-full appearance-none rounded-lg border border-slate-200 pl-3 pr-9 py-2.5 outline-none focus:border-slate-900 bg-white text-sm text-slate-900"
+          className="w-full appearance-none rounded-lg border border-slate-200 pl-3 pr-9 py-2.5 outline-none focus:border-[#6b4226] bg-white text-sm text-slate-900"
         >
           <option value="all">전체 집안일</option>
           {chores.map((c) => (
@@ -112,11 +112,11 @@ export default function History() {
                           value={memoDraft}
                           placeholder="메모 입력"
                           onChange={(e) => setMemoDraft(e.target.value)}
-                          className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-slate-900"
+                          className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-[#6b4226]"
                         />
                         <button
                           onClick={() => handleSaveMemo(log.id)}
-                          className="rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs px-3 py-1.5 font-medium shrink-0"
+                          className="rounded-lg bg-[#6b4226] hover:bg-[#54341e] text-white text-xs px-3 py-1.5 font-medium shrink-0"
                         >
                           저장
                         </button>
@@ -135,7 +135,7 @@ export default function History() {
                     <div className="flex gap-1.5 text-xs shrink-0">
                       <button
                         onClick={() => startEditMemo(log)}
-                        className="rounded-md border border-slate-200 text-slate-500 hover:border-slate-900 hover:text-slate-900 px-2 py-1"
+                        className="rounded-md border border-slate-200 text-slate-500 hover:border-[#6b4226] hover:text-slate-900 px-2 py-1"
                       >
                         메모
                       </button>
