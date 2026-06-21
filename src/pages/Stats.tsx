@@ -85,7 +85,7 @@ export default function Stats() {
             return (
               <li key={p.id} className="py-3 px-3">
                 <div className="flex items-center justify-between mb-1.5">
-                  <p className="font-medium text-slate-900">
+                  <p className="text-sm font-medium text-slate-900">
                     {p.emoji ? `${p.emoji}(${p.display_name})` : p.display_name}
                   </p>
                   <p className="text-sm text-slate-500">
@@ -102,7 +102,7 @@ export default function Stats() {
       )}
 
       <section>
-        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1 pt-2">
+        <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-1 pt-2">
           집안일별 처리 현황 (반복)
         </h3>
         {recurringStats.length === 0 ? (
@@ -112,7 +112,7 @@ export default function Stats() {
             {recurringStats.map(({ chore, count, expected, onTrack, delayed }) => (
               <li key={chore.id} className="py-3 px-3 flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-slate-900">{chore.name}</p>
+                  <p className="text-sm font-medium text-slate-900">{chore.name}</p>
                   <p className="text-xs text-slate-400">
                     {chore.period_days}일마다 반복 · 예상 {expected}회
                     {delayed > 0 && <span className="text-amber-500"> · 지연 {delayed}회</span>}
@@ -128,7 +128,7 @@ export default function Stats() {
       </section>
 
       <section>
-        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1 pt-2">
+        <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-1 pt-2">
           집안일별 처리 현황 (1회성)
         </h3>
         {onceStats.length === 0 ? (
@@ -137,7 +137,7 @@ export default function Stats() {
           <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
             {onceStats.map(({ chore, count }) => (
               <li key={chore.id} className="py-3 px-3 flex items-center justify-between">
-                <p className="font-medium text-slate-900">{chore.name}</p>
+                <p className="text-sm font-medium text-slate-900">{chore.name}</p>
                 <p className={`text-sm font-semibold ${count > 0 ? 'text-slate-900' : 'text-slate-400'}`}>
                   {count > 0 ? '처리완료 ✅' : '미처리'}
                 </p>
