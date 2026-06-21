@@ -218,6 +218,7 @@ export default function Home() {
             ›
           </button>
         </div>
+        <div className="border-t border-slate-200 mb-2" />
         <div className="grid grid-cols-7 gap-1 text-center text-xs mb-1">
           {['일', '월', '화', '수', '목', '금', '토'].map((d, i) => (
             <div key={d} className={i === 0 ? 'text-rose-500' : i === 6 ? 'text-blue-500' : 'text-slate-400'}>
@@ -273,6 +274,7 @@ export default function Home() {
             )
           )}
         </div>
+        <div className="border-t border-slate-200 mt-2" />
       </section>
 
       <section>
@@ -295,9 +297,9 @@ export default function Home() {
                   className="shrink-0 w-36 snap-start border border-slate-200 rounded-lg p-3 flex flex-col justify-between"
                 >
                   <div>
-                    <p className="text-base font-medium text-slate-700 leading-relaxed">{chore.name}</p>
+                    <p className="text-base font-medium text-slate-700 leading-relaxed text-center">{chore.name}</p>
                     {!doneOnSelected && chore.last_done_date && (
-                      <p className={`text-xs mt-0.5 ${overdue ? 'text-rose-500' : 'text-slate-400'}`}>
+                      <p className={`text-xs mt-0.5 text-center ${overdue ? 'text-rose-500' : 'text-slate-400'}`}>
                         마지막 처리: {chore.last_done_date} ({profileName(chore.last_done_by)})
                         {overdue && ' · 기한 지남'}
                       </p>
