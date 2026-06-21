@@ -132,9 +132,9 @@ export default function Home() {
 
   return (
     <div className="space-y-6 pt-4">
-      <section>
+      <section className="h-11">
         {editingHouseNote ? (
-          <div className="border border-amber-300 rounded-lg p-2 flex items-center gap-2">
+          <div className="h-11 border border-amber-300 rounded-lg px-2 flex items-center gap-2">
             <input
               type="text"
               autoFocus
@@ -159,7 +159,7 @@ export default function Home() {
         ) : houseNote ? (
           <div
             title={profileName(houseNote.author)}
-            className="border border-amber-300 rounded-lg pl-3 pr-1.5 py-1.5 flex items-center justify-between gap-2"
+            className="h-11 border border-amber-300 rounded-lg pl-3 pr-1.5 flex items-center justify-between gap-2"
           >
             <p className="text-sm font-bold text-slate-900 truncate">❗ {houseNote.message}</p>
             <div className="flex gap-1 shrink-0">
@@ -180,7 +180,7 @@ export default function Home() {
         ) : (
           <button
             onClick={startEditHouseNote}
-            className="text-xs text-slate-300 hover:text-slate-500"
+            className="h-11 w-full flex items-center text-xs text-slate-300 hover:text-slate-500"
           >
             + 긴급 메모 남기기
           </button>
