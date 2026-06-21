@@ -319,7 +319,7 @@ export default function Home() {
                           : 'bg-[#8b5e3c] hover:bg-[#74492d] text-white'
                       }`}
                     >
-                      {doneOnSelected ? '완료 ↩' : '처리'}
+                      {doneOnSelected ? '취소' : '완료'}
                     </button>
                   </div>
                 </div>
