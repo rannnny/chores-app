@@ -38,7 +38,7 @@ export default function Chores() {
         {list.map((chore) => (
           <li key={chore.id} className="py-3 px-3 flex items-center justify-between">
             <div>
-              <p className="text-base font-medium text-slate-900">{chore.name}</p>
+              <p className="text-base font-medium text-slate-700 leading-relaxed">{chore.name}</p>
               <p className="text-xs text-slate-400">
                 {chore.period_days ? `${chore.period_days}일마다 반복` : `예정일: ${chore.due_date ?? '-'}`}
               </p>
@@ -60,7 +60,7 @@ export default function Chores() {
   return (
     <div className="space-y-6 pt-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">등록된 집안일</h2>
+        <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug">등록된 집안일</h2>
         <button
           onClick={() => setEditing('new')}
           className="rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm px-3 py-1.5 font-medium"
@@ -74,11 +74,11 @@ export default function Chores() {
       ) : (
         <>
           <section>
-            <h3 className="text-lg font-semibold text-slate-700 mb-1">반복 작업</h3>
+            <h3 className="text-lg font-bold text-slate-700 mb-1 leading-snug">반복 작업</h3>
             {renderList(recurringChores, '등록된 반복 작업이 없어요.')}
           </section>
           <section>
-            <h3 className="text-lg font-semibold text-slate-700 mb-1">1회성 작업</h3>
+            <h3 className="text-lg font-bold text-slate-700 mb-1 leading-snug">1회성 작업</h3>
             {renderList(onceChores, '등록된 1회성 작업이 없어요.')}
           </section>
         </>

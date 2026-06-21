@@ -13,6 +13,7 @@ import {
   subMonths,
 } from 'date-fns'
 import { y2018, y2019, y2020, y2021, y2022, y2023, y2024, y2025, y2026 } from '@hyunbinseo/holidays-kr'
+import KoreanLunarCalendar from 'korean-lunar-calendar'
 import { useAuth } from '../lib/AuthContext'
 import { useToast } from '../components/Toast'
 import {
@@ -37,6 +38,13 @@ const HOLIDAYS: Record<string, readonly string[]> = {
   ...y2024,
   ...y2025,
   ...y2026,
+}
+
+const lunarCalendar = new KoreanLunarCalendar()
+
+function isFullMoonDay(date: Date): boolean {
+  const ok = lunarCalendar.setSolarDate(date.getFullYear(), date.getMonth() + 1, date.getDate())
+  return ok && lunarCalendar.getLunarCalendar().day === 15
 }
 
 export default function Home() {
@@ -132,11 +140,11 @@ export default function Home() {
 
   return (
     <div className="space-y-6 pt-4">
-      <section className="h-11">
+      <section className="h-8">
         {houseNote ? (
           <div
             title={profileName(houseNote.author)}
-            className="h-11 pl-3 pr-1.5 flex items-center justify-between gap-2"
+            className="h-8 pl-3 pr-1.5 flex items-center justify-between gap-2"
           >
             <p className="text-sm font-bold text-slate-900 truncate">❗ {houseNote.message}</p>
             <div className="flex gap-1 shrink-0">
@@ -157,7 +165,7 @@ export default function Home() {
         ) : (
           <button
             onClick={startEditHouseNote}
-            className="h-11 w-full flex items-center justify-end text-xs text-slate-300 hover:text-slate-500"
+            className="h-8 w-full flex items-center justify-end text-xs text-slate-300 hover:text-slate-500"
           >
             + 긴급 메모 남기기
           </button>
@@ -205,7 +213,7 @@ export default function Home() {
           <button onClick={() => setMonth((m) => subMonths(m, 1))} className="text-slate-400 px-2">
             ‹
           </button>
-          <h2 className="text-lg font-semibold text-slate-900">{format(month, 'yyyy년 M월')}</h2>
+          <h2 className="text-lg font-bold text-slate-700 leading-snug">{format(month, 'yyyy년 M월')}</h2>
           <button onClick={() => setMonth((m) => addMonths(m, 1))} className="text-slate-400 px-2">
             ›
           </button>
@@ -249,12 +257,14 @@ export default function Home() {
                       } ${isSelected && !isToday(day) ? 'ring-1 ring-slate-900' : ''}`}
                     >
                       <span>{format(day, 'd')}</span>
-                      {dueChores.length > 0 && (
+                      {dueChores.length > 0 ? (
                         <span
                           className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
                             isPast && !isSameDay(day, new Date()) ? 'bg-rose-400' : 'bg-amber-400'
                           } ${isToday(day) ? '!bg-white' : ''}`}
                         />
+                      ) : (
+                        isFullMoonDay(day) && <span className="text-[8px] leading-none mt-0.5">🌕</span>
                       )}
                     </button>
                   )
@@ -266,7 +276,7 @@ export default function Home() {
       </section>
 
       <section>
-        <h2 className="text-2xl font-semibold text-slate-900 mb-2 tracking-tight">
+        <h2 className="text-2xl font-bold text-slate-900 mb-2 tracking-tight leading-snug">
           {selectedDate === today ? '오늘 할 일' : `${selectedDate} 할 일`}
           {dueList.length > 0 && ` (${dueList.length})`}
         </h2>
@@ -283,7 +293,7 @@ export default function Home() {
                 <li key={chore.id} className="py-3 px-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-base font-medium text-slate-900">{chore.name}</p>
+                      <p className="text-base font-medium text-slate-700 leading-relaxed">{chore.name}</p>
                       {!doneOnSelected && chore.last_done_date && (
                         <p className={`text-xs ${overdue ? 'text-rose-500' : 'text-slate-400'}`}>
                           마지막 처리: {chore.last_done_date} ({profileName(chore.last_done_by)})

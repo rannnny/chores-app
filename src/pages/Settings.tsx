@@ -15,6 +15,7 @@ export default function Settings() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [savingPassword, setSavingPassword] = useState(false)
   const [passwordError, setPasswordError] = useState<string | null>(null)
+  const [passwordOpen, setPasswordOpen] = useState(false)
 
   async function handleSaveName() {
     if (!session || !displayName.trim()) return
@@ -57,76 +58,92 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-6 pt-4">
-      <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">설정</h2>
+    <div className="space-y-10 pt-4">
+      <h2 className="text-[28px] font-bold text-slate-900 tracking-tight leading-snug">설정</h2>
 
-      <div className="space-y-2">
-        <p className="text-xs text-slate-400">이름</p>
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="이름 입력"
-            className="flex-1 rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-slate-900"
-          />
-          <button
-            disabled={savingName || !displayName.trim()}
-            onClick={handleSaveName}
-            className="rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-4 py-2 font-medium shrink-0"
-          >
-            저장
-          </button>
-        </div>
+      <div className="space-y-3">
+        <label className="block text-sm font-semibold text-[#4a4a4a]">이름</label>
+        <input
+          type="text"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+          placeholder="이름 입력"
+          className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-slate-900"
+        />
+        <button
+          disabled={savingName || !displayName.trim()}
+          onClick={handleSaveName}
+          className="w-full sm:w-auto rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-5 py-2.5 font-medium"
+        >
+          저장
+        </button>
       </div>
 
-      <div className="space-y-2">
-        <p className="text-xs text-slate-400">완료 표시에 쓸 이모지 (예: 👩 👨 🐱 🦁)</p>
-        <div className="flex items-center gap-2">
-          <p className="text-base font-medium text-slate-900 shrink-0">{profile?.display_name}님의 이모지</p>
+      <div className="space-y-3">
+        <label className="block text-sm font-semibold text-[#4a4a4a]">이모지</label>
+        <p className="text-xs text-slate-300">완료 표시에 쓸 이모지를 직접 입력해주세요. (예: 👩 👨 🐱 🦁)</p>
+        <div className="flex items-center gap-3">
           <input
             type="text"
             value={emoji}
             onChange={(e) => setEmoji(e.target.value)}
             placeholder="이모지"
-            className="w-16 rounded-lg border border-slate-200 px-2 py-2 text-xl text-center outline-none focus:border-slate-900"
+            className="w-16 rounded-lg border border-slate-200 px-2 py-2.5 text-xl text-center outline-none focus:border-slate-900"
           />
-          <button
-            disabled={savingEmoji || !emoji.trim()}
-            onClick={handleSaveEmoji}
-            className="rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-4 py-2 font-medium shrink-0"
-          >
-            저장
-          </button>
+          <span className="text-sm text-slate-500">{profile?.display_name}님이 처리하면 이 이모지가 표시돼요</span>
         </div>
+        <button
+          disabled={savingEmoji || !emoji.trim()}
+          onClick={handleSaveEmoji}
+          className="w-full sm:w-auto rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-5 py-2.5 font-medium"
+        >
+          저장
+        </button>
       </div>
 
-      <div className="space-y-2">
-        <p className="text-xs text-slate-400">비밀번호 변경</p>
-        <input
-          type="password"
-          minLength={6}
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          placeholder="새 비밀번호"
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-slate-900"
-        />
-        <input
-          type="password"
-          minLength={6}
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="새 비밀번호 확인"
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-slate-900"
-        />
-        {passwordError && <p className="text-sm text-rose-500">{passwordError}</p>}
+      <div>
         <button
-          disabled={savingPassword || !newPassword || !confirmPassword}
-          onClick={handleSavePassword}
-          className="w-full rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white py-2 font-medium"
+          type="button"
+          onClick={() => setPasswordOpen((o) => !o)}
+          className="w-full flex items-center justify-between text-sm font-semibold text-[#4a4a4a]"
         >
-          {savingPassword ? '변경 중...' : '비밀번호 변경'}
+          <span>비밀번호 변경</span>
+          <span className={`text-slate-400 transition-transform duration-300 ${passwordOpen ? 'rotate-180' : ''}`}>
+            ⌄
+          </span>
         </button>
+        <div
+          className={`overflow-hidden transition-all duration-300 ${
+            passwordOpen ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="space-y-3">
+            <input
+              type="password"
+              minLength={6}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="새 비밀번호"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-slate-900"
+            />
+            <input
+              type="password"
+              minLength={6}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="새 비밀번호 확인"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-slate-900"
+            />
+            {passwordError && <p className="text-sm text-rose-500">{passwordError}</p>}
+            <button
+              disabled={savingPassword || !newPassword || !confirmPassword}
+              onClick={handleSavePassword}
+              className="w-full sm:w-auto rounded-lg border border-slate-300 hover:bg-slate-50 disabled:opacity-50 text-slate-700 px-5 py-2.5 font-medium"
+            >
+              {savingPassword ? '변경 중...' : '비밀번호 변경'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
