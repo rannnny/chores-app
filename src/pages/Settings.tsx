@@ -16,6 +16,7 @@ export default function Settings() {
   const [savingPassword, setSavingPassword] = useState(false)
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [passwordOpen, setPasswordOpen] = useState(false)
+  const [nicknameOpen, setNicknameOpen] = useState(false)
 
   async function handleSaveName() {
     if (!session || !displayName.trim()) return
@@ -61,28 +62,44 @@ export default function Settings() {
     <div className="space-y-10 pt-4">
       <h2 className="text-[28px] font-bold text-slate-900 tracking-tight leading-snug">설정</h2>
 
-      <div className="space-y-3">
-        <label className="block text-sm font-semibold text-[#4a4a4a]">이름</label>
-        <input
-          type="text"
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-          placeholder="이름 입력"
-          className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-slate-900"
-        />
+      <div>
         <button
-          disabled={savingName || !displayName.trim()}
-          onClick={handleSaveName}
-          className="w-full sm:w-auto rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-5 py-2.5 font-medium"
+          type="button"
+          onClick={() => setNicknameOpen((o) => !o)}
+          className="w-full flex items-center justify-between text-sm font-semibold text-[#4a4a4a]"
         >
-          저장
+          <span>닉네임 변경</span>
+          <span className={`text-slate-400 transition-transform duration-300 ${nicknameOpen ? 'rotate-180' : ''}`}>
+            ⌄
+          </span>
         </button>
+        <div
+          className={`overflow-hidden transition-all duration-300 ${
+            nicknameOpen ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="닉네임 입력"
+              className="flex-1 rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-slate-900"
+            />
+            <button
+              disabled={savingName || !displayName.trim()}
+              onClick={handleSaveName}
+              className="rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-5 py-2.5 font-medium shrink-0"
+            >
+              저장
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="space-y-3">
         <label className="block text-sm font-semibold text-[#4a4a4a]">이모지</label>
-        <p className="text-xs text-slate-300">완료 표시에 쓸 이모지를 직접 입력해주세요. (예: 👩 👨 🐱 🦁)</p>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <input
             type="text"
             value={emoji}
@@ -90,15 +107,14 @@ export default function Settings() {
             placeholder="이모지"
             className="w-16 rounded-lg border border-slate-200 px-2 py-2.5 text-xl text-center outline-none focus:border-slate-900"
           />
-          <span className="text-sm text-slate-500">{profile?.display_name}님이 처리하면 이 이모지가 표시돼요</span>
+          <button
+            disabled={savingEmoji || !emoji.trim()}
+            onClick={handleSaveEmoji}
+            className="rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-5 py-2.5 font-medium shrink-0"
+          >
+            저장
+          </button>
         </div>
-        <button
-          disabled={savingEmoji || !emoji.trim()}
-          onClick={handleSaveEmoji}
-          className="w-full sm:w-auto rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-5 py-2.5 font-medium"
-        >
-          저장
-        </button>
       </div>
 
       <div>
