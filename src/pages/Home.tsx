@@ -133,30 +133,7 @@ export default function Home() {
   return (
     <div className="space-y-6 pt-4">
       <section className="h-11">
-        {editingHouseNote ? (
-          <div className="h-11 px-2 flex items-center gap-2">
-            <input
-              type="text"
-              autoFocus
-              value={houseNoteDraft}
-              placeholder="예: 가스 점검 내일 오전 10시 방문"
-              onChange={(e) => setHouseNoteDraft(e.target.value)}
-              className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-slate-900 placeholder:text-xs placeholder:text-slate-300"
-            />
-            <button
-              onClick={handleSaveHouseNote}
-              className="rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs px-3 py-1.5 font-medium shrink-0"
-            >
-              저장
-            </button>
-            <button
-              onClick={() => setEditingHouseNote(false)}
-              className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs px-3 py-1.5 shrink-0"
-            >
-              취소
-            </button>
-          </div>
-        ) : houseNote ? (
+        {houseNote ? (
           <div
             title={profileName(houseNote.author)}
             className="h-11 pl-3 pr-1.5 flex items-center justify-between gap-2"
@@ -186,6 +163,42 @@ export default function Home() {
           </button>
         )}
       </section>
+
+      {editingHouseNote && (
+        <div
+          className="fixed inset-0 bg-black/30 flex items-center justify-center px-4 z-40"
+          onClick={() => setEditingHouseNote(false)}
+        >
+          <div
+            className="bg-white rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-semibold text-slate-900 text-lg tracking-tight">긴급 메모</h3>
+            <input
+              type="text"
+              autoFocus
+              value={houseNoteDraft}
+              placeholder="예: 가스 점검 내일 오전 10시 방문"
+              onChange={(e) => setHouseNoteDraft(e.target.value)}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-900"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => setEditingHouseNote(false)}
+                className="flex-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 font-medium"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleSaveHouseNote}
+                className="flex-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white py-2.5 font-medium"
+              >
+                저장
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <section>
         <div className="flex items-center justify-between mb-2">
