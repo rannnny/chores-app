@@ -139,8 +139,8 @@ export default function Home() {
   if (loading) return <p className="text-slate-400 mt-10 text-center">불러오는 중...</p>
 
   return (
-    <div className="space-y-6 pt-4">
-      <section className="h-8">
+    <div className="pt-1">
+      <section className="h-8 mb-1">
         {houseNote ? (
           <div
             title={profileName(houseNote.author)}
@@ -208,13 +208,14 @@ export default function Home() {
         </div>
       )}
 
+      <div className="space-y-6">
       <section>
         <div className="flex items-center justify-between mb-2">
-          <button onClick={() => setMonth((m) => subMonths(m, 1))} className="text-slate-400 px-2">
+          <button onClick={() => setMonth((m) => subMonths(m, 1))} className="text-lg font-bold text-slate-400 px-2">
             ‹
           </button>
           <h2 className="text-lg font-bold text-slate-700 leading-snug">{format(month, 'yyyy년 M월')}</h2>
-          <button onClick={() => setMonth((m) => addMonths(m, 1))} className="text-slate-400 px-2">
+          <button onClick={() => setMonth((m) => addMonths(m, 1))} className="text-lg font-bold text-slate-400 px-2">
             ›
           </button>
         </div>
@@ -285,46 +286,49 @@ export default function Home() {
             {selectedDate === today ? '오늘은 할 일이 없어요 🎉' : '이 날에는 할 일이 없어요'}
           </p>
         ) : (
-          <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 snap-x snap-mandatory">
             {dueList.map((chore) => {
               const doneOnSelected = chore.last_done_date === selectedDate
               const overdue = !doneOnSelected && !!chore.next_due_date && chore.next_due_date < selectedDate
               return (
-                <li key={chore.id} className="py-3 px-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-base font-medium text-slate-700 leading-relaxed">{chore.name}</p>
-                      {!doneOnSelected && chore.last_done_date && (
-                        <p className={`text-xs ${overdue ? 'text-rose-500' : 'text-slate-400'}`}>
-                          마지막 처리: {chore.last_done_date} ({profileName(chore.last_done_by)})
-                          {overdue && ' · 기한 지남'}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      {doneOnSelected && <span className="text-lg">{profileEmoji(chore.last_done_by)}</span>}
-                      <button
-                        onClick={() =>
-                          doneOnSelected && chore.last_log_id
-                            ? handleUndo(chore.last_log_id)
-                            : handleComplete(chore.id, selectedDate, '')
-                        }
-                        className={`rounded-lg text-sm px-3 py-1.5 font-medium ${
-                          doneOnSelected
-                            ? 'bg-slate-100 hover:bg-slate-200 text-slate-400'
-                            : 'bg-slate-900 hover:bg-slate-800 text-white'
-                        }`}
-                      >
-                        {doneOnSelected ? '완료 ↩' : '처리'}
-                      </button>
-                    </div>
+                <div
+                  key={chore.id}
+                  className="shrink-0 w-36 snap-start border border-slate-200 rounded-lg p-3 flex flex-col justify-between"
+                >
+                  <div>
+                    <p className="text-base font-medium text-slate-700 leading-relaxed">{chore.name}</p>
+                    {!doneOnSelected && chore.last_done_date && (
+                      <p className={`text-xs mt-0.5 ${overdue ? 'text-rose-500' : 'text-slate-400'}`}>
+                        마지막 처리: {chore.last_done_date} ({profileName(chore.last_done_by)})
+                        {overdue && ' · 기한 지남'}
+                      </p>
+                    )}
                   </div>
-                </li>
+                  <div className="flex items-center justify-center gap-1.5 mt-2">
+                    {doneOnSelected && <span className="text-lg">{profileEmoji(chore.last_done_by)}</span>}
+                    <button
+                      onClick={() =>
+                        doneOnSelected && chore.last_log_id
+                          ? handleUndo(chore.last_log_id)
+                          : handleComplete(chore.id, selectedDate, '')
+                      }
+                      className={`rounded-lg text-sm px-3 py-1.5 font-medium ${
+                        doneOnSelected
+                          ? 'bg-slate-100 hover:bg-slate-200 text-slate-400'
+                          : 'bg-slate-900 hover:bg-slate-800 text-white'
+                      }`}
+                    >
+                      {doneOnSelected ? '완료 ↩' : '처리'}
+                    </button>
+                  </div>
+                </div>
               )
             })}
-          </ul>
+          </div>
         )}
       </section>
+
+      </div>
 
       {!profile && <p className="text-xs text-slate-400 text-center">프로필 정보를 불러오는 중...</p>}
     </div>
