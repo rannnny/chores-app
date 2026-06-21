@@ -89,8 +89,10 @@ create table if not exists house_notes (
   id smallint primary key default 1 check (id = 1),
   author uuid not null references profiles(id),
   message text not null,
+  acknowledged_by uuid references profiles(id),
   updated_at timestamptz not null default now()
 );
+alter table house_notes add column if not exists acknowledged_by uuid references profiles(id);
 
 alter table house_notes enable row level security;
 

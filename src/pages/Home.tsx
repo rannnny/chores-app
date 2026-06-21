@@ -18,6 +18,7 @@ import KoreanLunarCalendar from 'korean-lunar-calendar'
 import { useAuth } from '../lib/AuthContext'
 import { useToast } from '../components/Toast'
 import {
+  acknowledgeHouseNote,
   clearHouseNote,
   createChore,
   deleteLog,
@@ -170,6 +171,8 @@ export default function Home() {
   }
 
   async function handleConfirmHouseNote() {
+    if (!session) return
+    await acknowledgeHouseNote(session.user.id)
     await clearHouseNote()
     refresh()
   }
@@ -216,18 +219,21 @@ export default function Home() {
           >
             <p className="flex-1 truncate">📢 {houseNote.message}</p>
             <div className="flex gap-1 shrink-0">
-              <button
-                onClick={startEditHouseNote}
-                className="rounded-full bg-white/70 hover:bg-white text-amber-700 text-xs px-2.5 py-1 border border-amber-200"
-              >
-                수정
-              </button>
-              <button
-                onClick={handleConfirmHouseNote}
-                className="rounded-full bg-amber-400 hover:bg-amber-500 text-white text-xs px-2.5 py-1 font-bold"
-              >
-                확인
-              </button>
+              {houseNote.author === session?.user.id ? (
+                <button
+                  onClick={startEditHouseNote}
+                  className="rounded-full bg-white/70 hover:bg-white text-amber-700 text-xs px-2.5 py-1 border border-amber-200"
+                >
+                  수정
+                </button>
+              ) : (
+                <button
+                  onClick={handleConfirmHouseNote}
+                  className="rounded-full bg-amber-400 hover:bg-amber-500 text-white text-xs px-2.5 py-1 font-bold"
+                >
+                  확인
+                </button>
+              )}
             </div>
           </div>
         ) : (

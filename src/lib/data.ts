@@ -175,7 +175,15 @@ export async function getHouseNote(): Promise<HouseNote | null> {
 export async function setHouseNote(author: string, message: string): Promise<void> {
   const { error } = await supabase
     .from('house_notes')
-    .upsert({ id: 1, author, message, updated_at: new Date().toISOString() }, { onConflict: 'id' })
+    .upsert(
+      { id: 1, author, message, acknowledged_by: null, updated_at: new Date().toISOString() },
+      { onConflict: 'id' }
+    )
+  if (error) throw error
+}
+
+export async function acknowledgeHouseNote(userId: string): Promise<void> {
+  const { error } = await supabase.from('house_notes').update({ acknowledged_by: userId }).eq('id', 1)
   if (error) throw error
 }
 
