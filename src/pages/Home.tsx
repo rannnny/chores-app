@@ -205,7 +205,7 @@ export default function Home() {
           <button onClick={() => setMonth((m) => subMonths(m, 1))} className="text-slate-400 px-2">
             ‹
           </button>
-          <h2 className="font-semibold text-slate-900">{format(month, 'yyyy년 M월')}</h2>
+          <h2 className="text-lg font-semibold text-slate-900">{format(month, 'yyyy년 M월')}</h2>
           <button onClick={() => setMonth((m) => addMonths(m, 1))} className="text-slate-400 px-2">
             ›
           </button>
@@ -266,7 +266,7 @@ export default function Home() {
       </section>
 
       <section>
-        <h2 className="font-semibold text-slate-900 mb-2">
+        <h2 className="text-2xl font-semibold text-slate-900 mb-2 tracking-tight">
           {selectedDate === today ? '오늘 할 일' : `${selectedDate} 할 일`}
           {dueList.length > 0 && ` (${dueList.length})`}
         </h2>
@@ -283,7 +283,7 @@ export default function Home() {
                 <li key={chore.id} className="py-3 px-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-slate-900">{chore.name}</p>
+                      <p className="text-base font-medium text-slate-900">{chore.name}</p>
                       {!doneOnSelected && chore.last_done_date && (
                         <p className={`text-xs ${overdue ? 'text-rose-500' : 'text-slate-400'}`}>
                           마지막 처리: {chore.last_done_date} ({profileName(chore.last_done_by)})

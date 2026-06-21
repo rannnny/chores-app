@@ -67,7 +67,7 @@ export default function Stats() {
         <button onClick={() => setMonth((m) => subMonths(m, 1))} className="text-slate-400 px-2">
           ‹
         </button>
-        <h2 className="text-lg font-semibold text-slate-900 tracking-tight">
+        <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">
           {format(month, 'yyyy년 M월')} 처리 통계
         </h2>
         <button onClick={() => setMonth((m) => addMonths(m, 1))} className="text-slate-400 px-2">
@@ -102,7 +102,7 @@ export default function Stats() {
       )}
 
       <section>
-        <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-1 pt-2">
+        <h3 className="text-lg font-semibold text-slate-700 mb-1 pt-2">
           집안일별 처리 현황 (반복)
         </h3>
         {recurringStats.length === 0 ? (
@@ -128,7 +128,7 @@ export default function Stats() {
       </section>
 
       <section>
-        <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-1 pt-2">
+        <h3 className="text-lg font-semibold text-slate-700 mb-1 pt-2">
           집안일별 처리 현황 (1회성)
         </h3>
         {onceStats.length === 0 ? (

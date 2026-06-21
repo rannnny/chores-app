@@ -59,7 +59,7 @@ export default function History() {
 
   return (
     <div className="space-y-4 pt-4">
-      <h2 className="text-lg font-semibold text-slate-900 tracking-tight">처리 이력</h2>
+      <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">처리 이력</h2>
 
       <div className="relative">
         <select
@@ -97,7 +97,7 @@ export default function History() {
               <li key={log.id} className="py-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
-                    <p className="text-slate-900">
+                    <p className="text-base text-slate-900">
                       <span className="font-medium">{choreName(log.chore_id)}</span>
                       <span className="text-xs text-slate-400">
                         {' '}

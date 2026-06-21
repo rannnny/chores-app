@@ -58,7 +58,7 @@ export default function Settings() {
 
   return (
     <div className="space-y-6 pt-4">
-      <h2 className="text-lg font-semibold text-slate-900 tracking-tight">설정</h2>
+      <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">설정</h2>
 
       <div className="space-y-2">
         <p className="text-xs text-slate-400">이름</p>
@@ -83,7 +83,7 @@ export default function Settings() {
       <div className="space-y-2">
         <p className="text-xs text-slate-400">완료 표시에 쓸 이모지 (예: 👩 👨 🐱 🦁)</p>
         <div className="flex items-center gap-2">
-          <p className="font-medium text-slate-900 shrink-0">{profile?.display_name}님의 이모지</p>
+          <p className="text-base font-medium text-slate-900 shrink-0">{profile?.display_name}님의 이모지</p>
           <input
             type="text"
             value={emoji}
