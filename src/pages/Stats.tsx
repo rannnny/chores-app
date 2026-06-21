@@ -78,72 +78,97 @@ export default function Stats() {
       {total === 0 ? (
         <p className="text-sm text-slate-400 py-6 text-center">이 달에는 처리 기록이 없어요.</p>
       ) : (
-        <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
+        <div className="grid grid-cols-2 gap-2">
           {profiles.map((p) => {
             const count = counts.get(p.id) ?? 0
             const pct = total > 0 ? Math.round((count / total) * 100) : 0
             return (
-              <li key={p.id} className="py-3 px-3">
+              <div key={p.id} className="border border-slate-200 rounded-lg p-3">
                 <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-sm font-medium text-slate-700 leading-relaxed">
+                  <p className="text-sm font-medium text-slate-700 leading-relaxed truncate">
                     {p.emoji ? `${p.emoji}(${p.display_name})` : p.display_name}
                   </p>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-slate-500 shrink-0">
                     {count}건 ({pct}%)
                   </p>
                 </div>
                 <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
                   <div className="h-full bg-[#FF922B]" style={{ width: `${pct}%` }} />
                 </div>
-              </li>
+              </div>
             )
           })}
-        </ul>
+        </div>
       )}
 
       <section>
-        <h3 className="text-lg font-bold text-slate-700 mb-1 pt-2 leading-snug">
-          집안일별 처리 현황 (반복)
-        </h3>
+        <h3 className="text-lg font-bold text-slate-700 mb-3 leading-snug">처리 현황 (반복)</h3>
         {recurringStats.length === 0 ? (
           <p className="text-sm text-slate-400 py-6 text-center">등록된 반복 작업이 없어요.</p>
         ) : (
-          <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
-            {recurringStats.map(({ chore, count, expected, onTrack, delayed }) => (
-              <li key={chore.id} className="py-3 px-3 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-700 leading-relaxed">{chore.name}</p>
-                  <p className="text-xs text-slate-400">
-                    {chore.period_days}일마다 반복 · 예상 {expected}회
-                    {delayed > 0 && <span className="text-amber-500"> · 지연 {delayed}회</span>}
-                  </p>
-                </div>
-                <p className={`text-sm font-semibold ${onTrack ? 'text-slate-900' : 'text-rose-500'}`}>
-                  {count}회 {onTrack ? '✅' : '⚠️'}
-                </p>
-              </li>
-            ))}
-          </ul>
+          <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm">
+            <colgroup>
+              <col className="w-1/2" />
+              <col className="w-[30%]" />
+              <col className="w-[20%]" />
+            </colgroup>
+            <thead>
+              <tr className="bg-slate-50 text-center text-xs text-slate-400">
+                <th className="py-2 px-3 font-medium">구분</th>
+                <th className="py-2 px-3 font-medium">주기</th>
+                <th className="py-2 px-3 font-medium">처리현황</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200">
+              {recurringStats.map(({ chore, count, expected, onTrack, delayed }) => (
+                <tr key={chore.id}>
+                  <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
+                  <td className="py-3 px-3 text-center text-slate-400">{chore.period_days}일</td>
+                  <td className="py-3 px-3 text-center">
+                    <span className={`font-semibold ${onTrack ? 'text-slate-900' : 'text-rose-500'}`}>
+                      {count}/{expected}회 {onTrack ? '✅' : '⚠️'}
+                    </span>
+                    {delayed > 0 && <p className="text-xs text-amber-500">지연 {delayed}회</p>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </section>
 
       <section>
-        <h3 className="text-lg font-bold text-slate-700 mb-1 pt-2 leading-snug">
-          집안일별 처리 현황 (1회성)
-        </h3>
+        <h3 className="text-lg font-bold text-slate-700 mb-3 leading-snug">처리 현황 (1회성)</h3>
         {onceStats.length === 0 ? (
           <p className="text-sm text-slate-400 py-6 text-center">등록된 1회성 작업이 없어요.</p>
         ) : (
-          <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
-            {onceStats.map(({ chore, count }) => (
-              <li key={chore.id} className="py-3 px-3 flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-700 leading-relaxed">{chore.name}</p>
-                <p className={`text-sm font-semibold ${count > 0 ? 'text-slate-900' : 'text-slate-400'}`}>
-                  {count > 0 ? '처리완료 ✅' : '미처리'}
-                </p>
-              </li>
-            ))}
-          </ul>
+          <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm">
+            <colgroup>
+              <col className="w-1/2" />
+              <col className="w-[30%]" />
+              <col className="w-[20%]" />
+            </colgroup>
+            <thead>
+              <tr className="bg-slate-50 text-center text-xs text-slate-400">
+                <th className="py-2 px-3 font-medium">구분</th>
+                <th className="py-2 px-3 font-medium">예정일</th>
+                <th className="py-2 px-3 font-medium">처리현황</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200">
+              {onceStats.map(({ chore, count }) => (
+                <tr key={chore.id}>
+                  <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
+                  <td className="py-3 px-3 text-center text-slate-400">{chore.due_date ?? '-'}</td>
+                  <td className="py-3 px-3 text-center">
+                    <span className={`font-semibold ${count > 0 ? 'text-slate-900' : 'text-slate-400'}`}>
+                      {count > 0 ? '처리완료 ✅' : '미처리'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </section>
     </div>

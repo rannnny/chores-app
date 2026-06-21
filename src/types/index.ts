@@ -34,6 +34,7 @@ export interface HouseNote {
   id: number
   author: string
   message: string
+  acknowledged_by: string | null
   updated_at: string
 }
 

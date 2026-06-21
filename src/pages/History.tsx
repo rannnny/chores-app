@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useToast } from '../components/Toast'
 import { deleteLog, getAllLogs, getAllProfiles, getChoresWithStatus, updateLogMemo } from '../lib/data'
 import type { Chore, ChoreLog, Profile } from '../types/index'
@@ -90,68 +90,84 @@ export default function History() {
       ) : filteredLogs.length === 0 ? (
         <p className="text-sm text-slate-400 py-10 text-center">처리 기록이 없어요.</p>
       ) : (
-        <ul className="divide-y divide-slate-200">
-          {filteredLogs.map((log) => {
-            const isEditing = editingMemoId === log.id
-            return (
-              <li key={log.id} className="py-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1">
-                    <p className="text-base text-slate-700 leading-relaxed">
-                      <span className="font-medium">{choreName(log.chore_id)}</span>
-                      <span className="text-xs text-slate-400">
-                        {' '}
-                        · {log.done_date} · {profileName(log.done_by)}
-                      </span>
-                    </p>
-                    {isEditing ? (
-                      <div className="flex gap-2 mt-2">
-                        <input
-                          type="text"
-                          autoFocus
-                          value={memoDraft}
-                          placeholder="메모 입력"
-                          onChange={(e) => setMemoDraft(e.target.value)}
-                          className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-[#FF922B]"
-                        />
+        <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm">
+          <colgroup>
+            <col className="w-[10%]" />
+            <col className="w-[35%]" />
+            <col className="w-[30%]" />
+            <col className="w-[25%]" />
+          </colgroup>
+          <thead>
+            <tr className="bg-slate-50 text-center text-xs text-slate-400">
+              <th className="py-2 px-3 font-medium">No.</th>
+              <th className="py-2 px-3 font-medium">집안일</th>
+              <th className="py-2 px-3 font-medium">날짜·처리자</th>
+              <th className="py-2 px-3 font-medium">관리</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-200">
+            {filteredLogs.map((log, i) => {
+              const isEditing = editingMemoId === log.id
+              return (
+                <Fragment key={log.id}>
+                  <tr>
+                    <td className="py-3 px-3 text-center text-slate-400">{i + 1}</td>
+                    <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">
+                      {choreName(log.chore_id)}
+                    </td>
+                    <td className="py-3 px-3 text-center text-slate-400">
+                      {log.done_date}
+                      <br />
+                      {profileName(log.done_by)}
+                    </td>
+                    <td className="py-3 px-3 text-center">
+                      <div className="flex flex-col gap-1 items-center">
                         <button
-                          onClick={() => handleSaveMemo(log.id)}
-                          className="rounded-lg bg-[#FF922B] hover:bg-[#E8830A] text-white text-xs px-3 py-1.5 font-medium shrink-0"
+                          onClick={() => (isEditing ? setEditingMemoId(null) : startEditMemo(log))}
+                          className="text-slate-400 hover:text-[#FF922B]"
                         >
-                          저장
+                          메모
                         </button>
                         <button
-                          onClick={() => setEditingMemoId(null)}
-                          className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs px-3 py-1.5 shrink-0"
+                          onClick={() => handleRestore(log.id)}
+                          className="text-slate-400 hover:text-rose-500"
                         >
                           취소
                         </button>
                       </div>
-                    ) : (
-                      log.memo && <p className="text-sm mt-1 text-slate-600">{log.memo}</p>
-                    )}
-                  </div>
-                  {!isEditing && (
-                    <div className="flex gap-1.5 text-xs shrink-0">
-                      <button
-                        onClick={() => startEditMemo(log)}
-                        className="rounded-md border border-slate-200 text-slate-500 hover:border-[#FF922B] hover:text-slate-900 px-2 py-1"
-                      >
-                        메모
-                      </button>
-                      <button
-                        onClick={() => handleRestore(log.id)}
-                        className="rounded-md border border-slate-200 text-slate-500 hover:border-rose-400 hover:text-rose-500 px-2 py-1"
-                      >
-                        취소
-                      </button>
-                    </div>
+                    </td>
+                  </tr>
+                  {(isEditing || log.memo) && (
+                    <tr>
+                      <td colSpan={4} className="px-3 py-2 bg-slate-50">
+                        {isEditing ? (
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              autoFocus
+                              value={memoDraft}
+                              placeholder="메모 입력"
+                              onChange={(e) => setMemoDraft(e.target.value)}
+                              className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-[#FF922B]"
+                            />
+                            <button
+                              onClick={() => handleSaveMemo(log.id)}
+                              className="rounded-lg bg-[#FF922B] hover:bg-[#E8830A] text-white text-xs px-3 py-1.5 font-medium shrink-0"
+                            >
+                              저장
+                            </button>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-slate-600 text-center">{log.memo}</p>
+                        )}
+                      </td>
+                    </tr>
                   )}
-                </div>
-              </li>
-            )
-          })}
-        </ul>
+                </Fragment>
+              )
+            })}
+          </tbody>
+        </table>
       )}
     </div>
   )

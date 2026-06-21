@@ -28,28 +28,41 @@ export default function Chores() {
   const recurringChores = chores.filter((c) => c.period_days !== null)
   const onceChores = chores.filter((c) => c.period_days === null)
 
-  function renderTable(list: ChoreWithStatus[], emptyText: string) {
+  function renderTable(
+    list: ChoreWithStatus[],
+    emptyText: string,
+    middleLabel: string,
+    middleValue: (chore: ChoreWithStatus) => string
+  ) {
     if (list.length === 0) {
       return <p className="text-sm text-slate-400 py-6 text-center">{emptyText}</p>
     }
     return (
-      <table className="w-full border border-slate-200 rounded-lg overflow-hidden text-sm">
+      <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm">
+        <colgroup>
+          <col className="w-[10%]" />
+          <col className="w-[40%]" />
+          <col className="w-[30%]" />
+          <col className="w-[20%]" />
+        </colgroup>
         <thead>
           <tr className="bg-slate-50 text-center text-xs text-slate-400">
-            <th className="py-2 px-3 font-medium">구분</th>
-            <th className="py-2 px-3 font-medium">주기</th>
+            <th className="py-2 px-3 font-medium">No.</th>
+            <th className="py-2 px-3 font-medium">집안일</th>
+            <th className="py-2 px-3 font-medium">{middleLabel}</th>
             <th className="py-2 px-3 font-medium">관리</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-200">
-          {list.map((chore) => (
+          {list.map((chore, i) => (
             <tr key={chore.id}>
-              <td className="py-3 px-3 text-center font-medium text-slate-700">{chore.name}</td>
+              <td className="py-3 px-3 text-center text-slate-400">{i + 1}</td>
+              <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
               <td
                 onClick={() => setEditing(chore)}
                 className="py-3 px-3 text-center text-slate-400 cursor-pointer hover:text-[#FF922B] hover:underline"
               >
-                {chore.period_days}일
+                {middleValue(chore)}
               </td>
               <td className="py-3 px-3 text-center">
                 <button onClick={() => setEditing(chore)} className="text-slate-400 hover:text-[#FF922B]">
@@ -60,27 +73,6 @@ export default function Chores() {
           ))}
         </tbody>
       </table>
-    )
-  }
-
-  function renderList(list: ChoreWithStatus[], emptyText: string) {
-    if (list.length === 0) {
-      return <p className="text-sm text-slate-400 py-6 text-center">{emptyText}</p>
-    }
-    return (
-      <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
-        {list.map((chore) => (
-          <li key={chore.id} className="py-3 px-3 flex items-center justify-between">
-            <div>
-              <p className="text-base font-medium text-slate-700 leading-relaxed">{chore.name}</p>
-              <p className="text-xs text-slate-400">예정일: {chore.due_date ?? '-'}</p>
-            </div>
-            <button onClick={() => setEditing(chore)} className="text-sm text-slate-400 hover:text-[#FF922B]">
-              수정
-            </button>
-          </li>
-        ))}
-      </ul>
     )
   }
 
@@ -101,12 +93,12 @@ export default function Chores() {
       ) : (
         <>
           <section>
-            <h3 className="text-lg font-bold text-slate-700 mb-1 leading-snug">🔁 반복 작업</h3>
-            {renderTable(recurringChores, '등록된 반복 작업이 없어요.')}
+            <h3 className="text-lg font-bold text-slate-700 mb-3 leading-snug">🔁 반복 작업</h3>
+            {renderTable(recurringChores, '등록된 반복 작업이 없어요.', '주기', (c) => `${c.period_days}일`)}
           </section>
           <section>
-            <h3 className="text-lg font-bold text-slate-700 mb-1 leading-snug">✅ 1회성 작업</h3>
-            {renderList(onceChores, '등록된 1회성 작업이 없어요.')}
+            <h3 className="text-lg font-bold text-slate-700 mb-3 leading-snug">✅ 1회성 작업</h3>
+            {renderTable(onceChores, '등록된 1회성 작업이 없어요.', '예정일', (c) => c.due_date ?? '-')}
           </section>
         </>
       )}
@@ -245,7 +237,7 @@ function ChoreFormModal({
             value={name}
             placeholder="예: 화장실 청소"
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#FF922B]"
+            className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-[#FF922B]"
           />
         </div>
 
@@ -253,7 +245,7 @@ function ChoreFormModal({
           <button
             type="button"
             onClick={() => setRecurring(true)}
-            className={`flex-1 rounded-lg py-2 text-sm font-medium ${
+            className={`flex-1 rounded-lg py-2.5 text-sm font-medium ${
               recurring ? 'bg-[#FF922B] text-white' : 'bg-slate-100 text-slate-500'
             }`}
           >
@@ -262,7 +254,7 @@ function ChoreFormModal({
           <button
             type="button"
             onClick={() => setRecurring(false)}
-            className={`flex-1 rounded-lg py-2 text-sm font-medium ${
+            className={`flex-1 rounded-lg py-2.5 text-sm font-medium ${
               !recurring ? 'bg-[#FF922B] text-white' : 'bg-slate-100 text-slate-500'
             }`}
           >
@@ -279,7 +271,7 @@ function ChoreFormModal({
                   key={p.label}
                   type="button"
                   onClick={() => selectPreset(periodModeFor(p.days), p.days)}
-                  className={`rounded-lg py-2 text-xs font-medium ${
+                  className={`rounded-lg py-1.5 text-xs font-medium ${
                     periodMode === periodModeFor(p.days) ? 'bg-[#FF922B] text-white' : 'bg-slate-100 text-slate-500'
                   }`}
                 >
@@ -289,7 +281,7 @@ function ChoreFormModal({
               <button
                 type="button"
                 onClick={() => selectPreset('custom')}
-                className={`rounded-lg py-2 text-xs font-medium ${
+                className={`rounded-lg py-1.5 text-xs font-medium ${
                   periodMode === 'custom' ? 'bg-[#FF922B] text-white' : 'bg-slate-100 text-slate-500'
                 }`}
               >
@@ -304,7 +296,7 @@ function ChoreFormModal({
                 value={periodDays}
                 placeholder="며칠마다?"
                 onChange={(e) => setPeriodDays(e.target.value)}
-                className="w-full mt-2 rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#FF922B]"
+                className="w-full mt-2 rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-[#FF922B]"
               />
             )}
           </div>
@@ -316,7 +308,7 @@ function ChoreFormModal({
               required
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#FF922B]"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-[#FF922B]"
             />
           </div>
         )}

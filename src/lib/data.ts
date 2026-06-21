@@ -75,11 +75,18 @@ export async function getChoresWithStatus(includeArchived = false): Promise<Chor
   })
 }
 
-export async function createChore(name: string, periodDays: number | null, dueDate: string | null): Promise<void> {
-  const { error } = await supabase
+export async function createChore(
+  name: string,
+  periodDays: number | null,
+  dueDate: string | null
+): Promise<Chore> {
+  const { data, error } = await supabase
     .from('chores')
     .insert({ name, period_days: periodDays, due_date: periodDays === null ? dueDate : null })
+    .select()
+    .single()
   if (error) throw error
+  return data
 }
 
 export async function updateChore(
