@@ -204,42 +204,51 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-7 gap-1">
-          {days.map((day) => {
-            const key = format(day, 'yyyy-MM-dd')
-            const dueChores = dueDatesInMonth.get(key) ?? []
-            const isPast = key < today
-            const dow = day.getDay()
-            const holidayNames = HOLIDAYS[key]
-            const dateColor =
-              !isSameMonth(day, month)
-                ? 'text-slate-300'
-                : holidayNames || dow === 0
-                  ? 'text-rose-500'
-                  : dow === 6
-                    ? 'text-blue-500'
-                    : 'text-slate-700'
-            const isSelected = key === selectedDate
-            return (
-              <button
-                key={key}
-                title={holidayNames?.join(', ')}
-                onClick={() => setSelectedDate(key)}
-                className={`aspect-square rounded-lg flex flex-col items-center justify-center text-xs ${
-                  isToday(day) ? 'bg-slate-900 text-white font-semibold' : dateColor
-                } ${isSelected && !isToday(day) ? 'ring-1 ring-slate-900' : ''}`}
+        <div className="space-y-1">
+          {Array.from({ length: days.length / 7 }, (_, week) => days.slice(week * 7, week * 7 + 7)).map(
+            (weekDays, week) => (
+              <div
+                key={week}
+                className={`grid grid-cols-7 gap-1 ${week > 0 ? 'pt-1 border-t border-slate-100' : ''}`}
               >
-                <span>{format(day, 'd')}</span>
-                {dueChores.length > 0 && (
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
-                      isPast && !isSameDay(day, new Date()) ? 'bg-rose-400' : 'bg-amber-400'
-                    } ${isToday(day) ? '!bg-white' : ''}`}
-                  />
-                )}
-              </button>
+                {weekDays.map((day) => {
+                  const key = format(day, 'yyyy-MM-dd')
+                  const dueChores = dueDatesInMonth.get(key) ?? []
+                  const isPast = key < today
+                  const dow = day.getDay()
+                  const holidayNames = HOLIDAYS[key]
+                  const dateColor =
+                    !isSameMonth(day, month)
+                      ? 'text-slate-300'
+                      : holidayNames || dow === 0
+                        ? 'text-rose-500'
+                        : dow === 6
+                          ? 'text-blue-500'
+                          : 'text-slate-700'
+                  const isSelected = key === selectedDate
+                  return (
+                    <button
+                      key={key}
+                      title={holidayNames?.join(', ')}
+                      onClick={() => setSelectedDate(key)}
+                      className={`aspect-square rounded-lg flex flex-col items-center pt-1.5 text-xs ${
+                        isToday(day) ? 'bg-slate-900 text-white font-semibold' : dateColor
+                      } ${isSelected && !isToday(day) ? 'ring-1 ring-slate-900' : ''}`}
+                    >
+                      <span>{format(day, 'd')}</span>
+                      {dueChores.length > 0 && (
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
+                            isPast && !isSameDay(day, new Date()) ? 'bg-rose-400' : 'bg-amber-400'
+                          } ${isToday(day) ? '!bg-white' : ''}`}
+                        />
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
             )
-          })}
+          )}
         </div>
       </section>
 
