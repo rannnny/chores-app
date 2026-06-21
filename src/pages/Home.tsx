@@ -180,7 +180,7 @@ export default function Home() {
         ) : (
           <button
             onClick={startEditHouseNote}
-            className="h-11 w-full flex items-center text-xs text-slate-300 hover:text-slate-500"
+            className="h-11 w-full flex items-center justify-end text-xs text-slate-300 hover:text-slate-500"
           >
             + 긴급 메모 남기기
           </button>
