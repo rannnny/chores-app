@@ -111,7 +111,9 @@ export default function Chores() {
             {renderTable(recurringChores, '등록된 반복 작업이 없어요.')}
           </section>
           <section>
-            <h3 className="text-lg font-bold text-slate-700 mb-1 leading-snug">📌 1회성 작업</h3>
+            <h3 className="text-lg font-bold text-slate-700 mb-1 leading-snug">
+              <span className="grayscale opacity-70">✅</span> 1회성 작업
+            </h3>
             {renderList(onceChores, '등록된 1회성 작업이 없어요.')}
           </section>
         </>
@@ -202,7 +204,7 @@ function ChoreFormModal({
               !recurring ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500'
             }`}
           >
-            📌 1회성 작업
+            <span className="grayscale opacity-70">✅</span> 1회성 작업
           </button>
         </div>
 
