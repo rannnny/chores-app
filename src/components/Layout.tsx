@@ -11,10 +11,10 @@ const tabs = [
 
 export default function Layout() {
   return (
-    <div className="h-dvh flex flex-col text-slate-800 bg-white">
+    <div className="h-dvh flex flex-col text-[#495057] bg-white">
       <header className="flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top)+1rem)] pb-4">
         <h1 className="text-base font-semibold text-slate-900 tracking-tight">집안일 공유</h1>
-        <button onClick={() => supabase.auth.signOut()} className="text-xs text-slate-400 hover:text-slate-700">
+        <button onClick={() => supabase.auth.signOut()} className="text-xs text-slate-400 hover:text-[#495057]">
           로그아웃
         </button>
       </header>
@@ -23,7 +23,7 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      <nav className="fixed bottom-0 inset-x-0 bg-white/95 border-t border-slate-100 backdrop-blur pb-[env(safe-area-inset-bottom)]">
+      <nav className="fixed bottom-0 inset-x-0 bg-white/95 border-t border-[#f1e3d3] backdrop-blur pb-[env(safe-area-inset-bottom)]">
         <div className="flex justify-around">
           {tabs.map((tab) => (
             <NavLink
@@ -32,7 +32,7 @@ export default function Layout() {
               end={tab.to === '/'}
               className={({ isActive }) =>
                 `flex flex-1 flex-col items-center gap-1 py-3 text-[11px] ${
-                  isActive ? 'text-[#8b5e3c] font-medium' : 'text-slate-400'
+                  isActive ? 'text-[#FF922B] font-medium' : 'text-slate-400'
                 }`
               }
             >
