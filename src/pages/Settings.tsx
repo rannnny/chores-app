@@ -4,6 +4,41 @@ import { useToast } from '../components/Toast'
 import { supabase } from '../lib/supabase'
 import { updateMyDisplayName, updateMyEmoji } from '../lib/data'
 
+function AccordionSection({
+  label,
+  open,
+  onToggle,
+  children,
+}: {
+  label: string
+  open: boolean
+  onToggle: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <div className="border-b border-slate-100 pb-6">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between text-base font-semibold text-slate-900"
+      >
+        <span>{label}</span>
+        <span className={`text-slate-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}>⌄</span>
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          open ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'
+        }`}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
+const ghostButton =
+  'rounded-lg border border-slate-300 hover:bg-slate-50 hover:border-slate-900 disabled:opacity-50 text-slate-700 text-sm px-4 py-2 font-medium'
+
 export default function Settings() {
   const { session, profile, refreshProfile } = useAuth()
   const showToast = useToast()
@@ -60,95 +95,49 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-10 pt-4">
+    <div className="space-y-12 pt-4 pb-10">
       <h2 className="text-[28px] font-bold text-slate-900 tracking-tight leading-snug">설정</h2>
 
-      <div>
-        <button
-          type="button"
-          onClick={() => setNicknameOpen((o) => !o)}
-          className="w-full flex items-center justify-between text-sm font-semibold text-[#4a4a4a]"
-        >
-          <span>닉네임</span>
-          <span className={`text-slate-400 transition-transform duration-300 ${nicknameOpen ? 'rotate-180' : ''}`}>
-            ⌄
-          </span>
-        </button>
-        <div
-          className={`overflow-hidden transition-all duration-300 ${
-            nicknameOpen ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
-          }`}
-        >
-          <div className="flex items-center gap-2">
+      <div className="space-y-8">
+        <AccordionSection label="닉네임" open={nicknameOpen} onToggle={() => setNicknameOpen((o) => !o)}>
+          <div className="space-y-3">
             <input
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="닉네임 입력"
-              className="flex-1 rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-slate-900"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-slate-900"
             />
-            <button
-              disabled={savingName || !displayName.trim()}
-              onClick={handleSaveName}
-              className="rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-5 py-2.5 font-medium shrink-0"
-            >
-              저장
-            </button>
+            <div className="flex justify-end">
+              <button
+                disabled={savingName || !displayName.trim()}
+                onClick={handleSaveName}
+                className={ghostButton}
+              >
+                저장
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
+        </AccordionSection>
 
-      <div>
-        <button
-          type="button"
-          onClick={() => setEmojiOpen((o) => !o)}
-          className="w-full flex items-center justify-between text-sm font-semibold text-[#4a4a4a]"
-        >
-          <span>이모지</span>
-          <span className={`text-slate-400 transition-transform duration-300 ${emojiOpen ? 'rotate-180' : ''}`}>
-            ⌄
-          </span>
-        </button>
-        <div
-          className={`overflow-hidden transition-all duration-300 ${
-            emojiOpen ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
-          }`}
-        >
-          <div className="flex items-center gap-2">
+        <AccordionSection label="이모지" open={emojiOpen} onToggle={() => setEmojiOpen((o) => !o)}>
+          <div className="space-y-3">
             <input
               type="text"
               value={emoji}
               onChange={(e) => setEmoji(e.target.value)}
               placeholder="이모지"
-              className="flex-1 rounded-lg border border-slate-200 px-3 py-2.5 text-xl text-center outline-none focus:border-slate-900"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-xl text-center outline-none focus:border-slate-900"
             />
-            <button
-              disabled={savingEmoji || !emoji.trim()}
-              onClick={handleSaveEmoji}
-              className="rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white px-5 py-2.5 font-medium shrink-0"
-            >
-              저장
-            </button>
+            <div className="flex justify-end">
+              <button disabled={savingEmoji || !emoji.trim()} onClick={handleSaveEmoji} className={ghostButton}>
+                저장
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
+        </AccordionSection>
 
-      <div>
-        <button
-          type="button"
-          onClick={() => setPasswordOpen((o) => !o)}
-          className="w-full flex items-center justify-between text-sm font-semibold text-[#4a4a4a]"
-        >
-          <span>비밀번호</span>
-          <span className={`text-slate-400 transition-transform duration-300 ${passwordOpen ? 'rotate-180' : ''}`}>
-            ⌄
-          </span>
-        </button>
-        <div
-          className={`overflow-hidden transition-all duration-300 ${
-            passwordOpen ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
-          }`}
-        >
+        <AccordionSection label="비밀번호" open={passwordOpen} onToggle={() => setPasswordOpen((o) => !o)}>
           <div className="space-y-3">
             <input
               type="password"
@@ -171,13 +160,13 @@ export default function Settings() {
               <button
                 disabled={savingPassword || !newPassword || !confirmPassword}
                 onClick={handleSavePassword}
-                className="rounded-lg border border-slate-300 hover:bg-slate-50 disabled:opacity-50 text-slate-700 px-5 py-2.5 font-medium"
+                className={ghostButton}
               >
                 {savingPassword ? '변경 중...' : '비밀번호 변경'}
               </button>
             </div>
           </div>
-        </div>
+        </AccordionSection>
       </div>
     </div>
   )
