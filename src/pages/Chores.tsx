@@ -20,7 +20,6 @@ export default function Chores() {
   }, [])
 
   async function handleArchive(id: string) {
-    if (!confirm('이 집안일을 삭제할까요? (처리 이력은 남아있어요)')) return
     await archiveChore(id)
     showToast('삭제했어요')
     load()
@@ -46,16 +45,16 @@ export default function Chores() {
           {list.map((chore) => (
             <tr key={chore.id}>
               <td className="py-3 px-3 text-center font-medium text-slate-700">{chore.name}</td>
-              <td className="py-3 px-3 text-center text-slate-400">{chore.period_days}일</td>
+              <td
+                onClick={() => setEditing(chore)}
+                className="py-3 px-3 text-center text-slate-400 cursor-pointer hover:text-[#8b5e3c] hover:underline"
+              >
+                {chore.period_days}일
+              </td>
               <td className="py-3 px-3 text-center">
-                <div className="flex gap-3 justify-center">
-                  <button onClick={() => setEditing(chore)} className="text-slate-400 hover:text-slate-900">
-                    수정
-                  </button>
-                  <button onClick={() => handleArchive(chore.id)} className="text-slate-400 hover:text-rose-500">
-                    삭제
-                  </button>
-                </div>
+                <button onClick={() => setEditing(chore)} className="text-slate-400 hover:text-[#8b5e3c]">
+                  수정
+                </button>
               </td>
             </tr>
           ))}
@@ -96,7 +95,7 @@ export default function Chores() {
         <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug">집안일 목록</h2>
         <button
           onClick={() => setEditing('new')}
-          className="rounded-lg bg-[#6b4226] hover:bg-[#54341e] text-white text-sm px-3 py-1.5 font-medium"
+          className="rounded-lg bg-[#8b5e3c] hover:bg-[#74492d] text-white text-sm px-3 py-1.5 font-medium"
         >
           + 추가
         </button>
@@ -112,7 +111,7 @@ export default function Chores() {
           </section>
           <section>
             <h3 className="text-lg font-bold text-slate-700 mb-1 leading-snug">
-              <span className="grayscale opacity-70">✅</span> 1회성 작업
+              ✅ 1회성 작업
             </h3>
             {renderList(onceChores, '등록된 1회성 작업이 없어요.')}
           </section>
@@ -183,7 +182,7 @@ function ChoreFormModal({
             value={name}
             placeholder="예: 화장실 청소"
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#6b4226]"
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#8b5e3c]"
           />
         </div>
 
@@ -192,7 +191,7 @@ function ChoreFormModal({
             type="button"
             onClick={() => setRecurring(true)}
             className={`flex-1 rounded-lg py-2 text-sm font-medium ${
-              recurring ? 'bg-[#6b4226] text-white' : 'bg-slate-100 text-slate-500'
+              recurring ? 'bg-[#8b5e3c] text-white' : 'bg-slate-100 text-slate-500'
             }`}
           >
             🔁 반복 작업
@@ -201,10 +200,10 @@ function ChoreFormModal({
             type="button"
             onClick={() => setRecurring(false)}
             className={`flex-1 rounded-lg py-2 text-sm font-medium ${
-              !recurring ? 'bg-[#6b4226] text-white' : 'bg-slate-100 text-slate-500'
+              !recurring ? 'bg-[#8b5e3c] text-white' : 'bg-slate-100 text-slate-500'
             }`}
           >
-            <span className="grayscale opacity-70">✅</span> 1회성 작업
+            ✅ 1회성 작업
           </button>
         </div>
 
@@ -217,7 +216,7 @@ function ChoreFormModal({
               required
               value={periodDays}
               onChange={(e) => setPeriodDays(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#6b4226]"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#8b5e3c]"
             />
           </div>
         ) : (
@@ -228,7 +227,7 @@ function ChoreFormModal({
               required
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#6b4226]"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#8b5e3c]"
             />
           </div>
         )}
@@ -244,7 +243,7 @@ function ChoreFormModal({
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 rounded-lg bg-[#6b4226] hover:bg-[#54341e] disabled:opacity-50 py-2.5 font-medium text-white"
+            className="flex-1 rounded-lg bg-[#8b5e3c] hover:bg-[#74492d] disabled:opacity-50 py-2.5 font-medium text-white"
           >
             {saving ? '저장 중...' : '저장'}
           </button>

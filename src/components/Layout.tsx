@@ -32,7 +32,7 @@ export default function Layout() {
               end={tab.to === '/'}
               className={({ isActive }) =>
                 `flex flex-1 flex-col items-center gap-1 py-3 text-[11px] ${
-                  isActive ? 'text-[#6b4226] font-medium' : 'text-slate-400'
+                  isActive ? 'text-[#8b5e3c] font-medium' : 'text-slate-400'
                 }`
               }
             >
