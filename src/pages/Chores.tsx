@@ -36,19 +36,19 @@ export default function Chores() {
     return (
       <table className="w-full border border-slate-200 rounded-lg overflow-hidden text-sm">
         <thead>
-          <tr className="bg-slate-50 text-left text-xs text-slate-400">
+          <tr className="bg-slate-50 text-center text-xs text-slate-400">
             <th className="py-2 px-3 font-medium">이름</th>
             <th className="py-2 px-3 font-medium">주기</th>
-            <th className="py-2 px-3 font-medium text-right">관리</th>
+            <th className="py-2 px-3 font-medium">관리</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-200">
           {list.map((chore) => (
             <tr key={chore.id}>
-              <td className="py-3 px-3 font-medium text-slate-700">{chore.name}</td>
-              <td className="py-3 px-3 text-slate-400">{chore.period_days}일마다</td>
-              <td className="py-3 px-3 text-right">
-                <div className="flex gap-3 justify-end">
+              <td className="py-3 px-3 text-center font-medium text-slate-700">{chore.name}</td>
+              <td className="py-3 px-3 text-center text-slate-400">{chore.period_days}일</td>
+              <td className="py-3 px-3 text-center">
+                <div className="flex gap-3 justify-center">
                   <button onClick={() => setEditing(chore)} className="text-slate-400 hover:text-slate-900">
                     수정
                   </button>
