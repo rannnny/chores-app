@@ -134,14 +134,14 @@ export default function Home() {
     <div className="space-y-6 pt-4">
       <section className="h-11">
         {editingHouseNote ? (
-          <div className="h-11 border border-amber-300 rounded-lg px-2 flex items-center gap-2">
+          <div className="h-11 px-2 flex items-center gap-2">
             <input
               type="text"
               autoFocus
               value={houseNoteDraft}
               placeholder="예: 가스 점검 내일 오전 10시 방문"
               onChange={(e) => setHouseNoteDraft(e.target.value)}
-              className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-slate-900"
+              className="flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none focus:border-slate-900 placeholder:text-xs placeholder:text-slate-300"
             />
             <button
               onClick={handleSaveHouseNote}
@@ -159,7 +159,7 @@ export default function Home() {
         ) : houseNote ? (
           <div
             title={profileName(houseNote.author)}
-            className="h-11 border border-amber-300 rounded-lg pl-3 pr-1.5 flex items-center justify-between gap-2"
+            className="h-11 pl-3 pr-1.5 flex items-center justify-between gap-2"
           >
             <p className="text-sm font-bold text-slate-900 truncate">❗ {houseNote.message}</p>
             <div className="flex gap-1 shrink-0">
