@@ -114,7 +114,7 @@ export default function Stats() {
             </colgroup>
             <thead>
               <tr className="bg-slate-50 text-center text-xs text-slate-400">
-                <th className="py-2 px-3 font-medium">구분</th>
+                <th className="py-2 px-3 font-medium">집안일</th>
                 <th className="py-2 px-3 font-medium">주기</th>
                 <th className="py-2 px-3 font-medium">처리현황</th>
               </tr>
@@ -150,7 +150,7 @@ export default function Stats() {
             </colgroup>
             <thead>
               <tr className="bg-slate-50 text-center text-xs text-slate-400">
-                <th className="py-2 px-3 font-medium">구분</th>
+                <th className="py-2 px-3 font-medium">집안일</th>
                 <th className="py-2 px-3 font-medium">예정일</th>
                 <th className="py-2 px-3 font-medium">처리현황</th>
               </tr>

@@ -26,6 +26,8 @@ export default function History() {
     load()
   }, [])
 
+  const formatDate = (date: string) => date.slice(2).replace(/-/g, '.')
+
   const choreName = (id: string) => chores.find((c) => c.id === id)?.name ?? '(삭제된 집안일)'
   const choreKind = (id: string) => {
     const chore = chores.find((c) => c.id === id)
@@ -89,15 +91,15 @@ export default function History() {
       ) : (
         <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm select-none">
           <colgroup>
-            <col className="w-[22%]" />
+            <col className="w-[24%]" />
             <col className="w-[18%]" />
-            <col className="w-[30%]" />
-            <col className="w-[30%]" />
+            <col className="w-[46%]" />
+            <col className="w-[12%]" />
           </colgroup>
           <thead>
             <tr className="bg-slate-50 text-center text-xs text-slate-400">
               <th className="py-2 px-3 font-medium">날짜</th>
-              <th className="py-2 px-3 font-medium">반복/1회성</th>
+              <th className="py-2 px-3 font-medium">주기</th>
               <th className="py-2 px-3 font-medium">집안일</th>
               <th className="py-2 px-3 font-medium">메모</th>
             </tr>
@@ -113,7 +115,7 @@ export default function History() {
                 className="active:bg-slate-50"
               >
                 <td className="py-3 px-3 text-center text-slate-400">
-                  {log.done_date}
+                  {formatDate(log.done_date)}
                   <br />
                   {profileName(log.done_by)}
                 </td>
@@ -121,7 +123,7 @@ export default function History() {
                 <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">
                   {choreName(log.chore_id)}
                 </td>
-                <td className="py-3 px-3 text-center text-slate-500 truncate">{log.memo || '-'}</td>
+                <td className="py-3 px-3 text-center text-slate-500">{log.memo ? '📝' : ''}</td>
               </tr>
             ))}
           </tbody>
@@ -181,7 +183,7 @@ function EditLogModal({
       >
         <h3 className="font-semibold text-slate-900 text-lg tracking-tight">{choreName} 처리 수정</h3>
         <p className="text-xs text-slate-400">
-          {log.done_date} · {memo ? '메모 있음' : '메모 없음'}
+          {log.done_date.slice(2).replace(/-/g, '.')} · {memo ? '메모 있음' : '메모 없음'}
         </p>
         <div>
           <label className="text-xs text-slate-500 mb-1 block">메모</label>
