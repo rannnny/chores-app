@@ -74,9 +74,15 @@ export default function History() {
             </option>
           ))}
         </select>
-        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">
-          ▾
-        </span>
+        <svg
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          fill="none"
+        >
+          <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </div>
 
       {loading ? (
@@ -84,16 +90,19 @@ export default function History() {
       ) : filteredLogs.length === 0 ? (
         <p className="text-sm text-slate-400 py-10 text-center">처리 기록이 없어요.</p>
       ) : (
-        <ul className="divide-y divide-slate-200 border border-slate-200 rounded-lg overflow-hidden">
+        <ul className="divide-y divide-slate-200">
           {filteredLogs.map((log) => {
             const isEditing = editingMemoId === log.id
             return (
-              <li key={log.id} className="py-3 px-3">
+              <li key={log.id} className="py-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
-                    <p className="font-medium text-slate-900">{choreName(log.chore_id)}</p>
-                    <p className="text-xs text-slate-400">
-                      {log.done_date} · {profileName(log.done_by)}
+                    <p className="text-slate-900">
+                      <span className="font-medium">{choreName(log.chore_id)}</span>
+                      <span className="text-xs text-slate-400">
+                        {' '}
+                        · {log.done_date} · {profileName(log.done_by)}
+                      </span>
                     </p>
                     {isEditing ? (
                       <div className="flex gap-2 mt-2">
