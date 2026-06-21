@@ -75,14 +75,9 @@ export default function Chores() {
               <p className="text-base font-medium text-slate-700 leading-relaxed">{chore.name}</p>
               <p className="text-xs text-slate-400">예정일: {chore.due_date ?? '-'}</p>
             </div>
-            <div className="flex gap-3 text-sm">
-              <button onClick={() => setEditing(chore)} className="text-slate-400 hover:text-slate-900">
-                수정
-              </button>
-              <button onClick={() => handleArchive(chore.id)} className="text-slate-400 hover:text-rose-500">
-                삭제
-              </button>
-            </div>
+            <button onClick={() => setEditing(chore)} className="text-sm text-slate-400 hover:text-[#8b5e3c]">
+              수정
+            </button>
           </li>
         ))}
       </ul>
@@ -110,9 +105,7 @@ export default function Chores() {
             {renderTable(recurringChores, '등록된 반복 작업이 없어요.')}
           </section>
           <section>
-            <h3 className="text-lg font-bold text-slate-700 mb-1 leading-snug">
-              ✅ 1회성 작업
-            </h3>
+            <h3 className="text-lg font-bold text-slate-700 mb-1 leading-snug">✅ 1회성 작업</h3>
             {renderList(onceChores, '등록된 1회성 작업이 없어요.')}
           </section>
         </>
@@ -126,27 +119,58 @@ export default function Chores() {
             setEditing(null)
             load()
           }}
+          onDelete={
+            editing !== 'new'
+              ? async () => {
+                  await handleArchive(editing.id)
+                  setEditing(null)
+                }
+              : undefined
+          }
         />
       )}
     </div>
   )
 }
 
+const PERIOD_PRESETS: { label: string; days: number }[] = [
+  { label: '매일', days: 1 },
+  { label: '매주', days: 7 },
+  { label: '매달', days: 30 },
+]
+
+function periodModeFor(days: number | null): 'daily' | 'weekly' | 'monthly' | 'custom' {
+  if (days === 1) return 'daily'
+  if (days === 7) return 'weekly'
+  if (days === 30) return 'monthly'
+  return 'custom'
+}
+
 function ChoreFormModal({
   chore,
   onCancel,
   onSaved,
+  onDelete,
 }: {
   chore: ChoreWithStatus | null
   onCancel: () => void
   onSaved: () => void
+  onDelete?: () => Promise<void>
 }) {
   const showToast = useToast()
   const [name, setName] = useState(chore?.name ?? '')
   const [recurring, setRecurring] = useState(chore ? chore.period_days !== null : true)
+  const [periodMode, setPeriodMode] = useState(periodModeFor(chore?.period_days ?? 7))
   const [periodDays, setPeriodDays] = useState(chore?.period_days ? String(chore.period_days) : '7')
   const [dueDate, setDueDate] = useState(chore?.due_date ?? todayStr())
   const [saving, setSaving] = useState(false)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+
+  function selectPreset(preset: 'daily' | 'weekly' | 'monthly' | 'custom', days?: number) {
+    setPeriodMode(preset)
+    if (days) setPeriodDays(String(days))
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -161,6 +185,45 @@ function ChoreFormModal({
     setSaving(false)
     showToast(chore ? '수정했어요' : '추가했어요')
     onSaved()
+  }
+
+  async function handleConfirmDelete() {
+    if (!onDelete) return
+    setDeleting(true)
+    await onDelete()
+    setDeleting(false)
+    showToast('삭제했어요')
+  }
+
+  if (confirmingDelete) {
+    return (
+      <div className="fixed inset-0 bg-black/30 flex items-center justify-center px-4 z-40" onClick={onCancel}>
+        <div
+          className="bg-white rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h3 className="font-semibold text-slate-900 text-lg tracking-tight">삭제할까요?</h3>
+          <p className="text-sm text-slate-500">처리 이력은 남아있어요.</p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setConfirmingDelete(false)}
+              className="flex-1 rounded-lg bg-slate-100 hover:bg-slate-200 py-2.5 font-medium text-slate-600"
+            >
+              취소
+            </button>
+            <button
+              type="button"
+              disabled={deleting}
+              onClick={handleConfirmDelete}
+              className="flex-1 rounded-lg bg-rose-500 hover:bg-rose-600 disabled:opacity-50 py-2.5 font-medium text-white"
+            >
+              {deleting ? '삭제 중...' : '삭제'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -209,15 +272,41 @@ function ChoreFormModal({
 
         {recurring ? (
           <div>
-            <label className="text-xs text-slate-500 mb-1 block">처리 주기 (일)</label>
-            <input
-              type="number"
-              min={1}
-              required
-              value={periodDays}
-              onChange={(e) => setPeriodDays(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#8b5e3c]"
-            />
+            <label className="text-xs text-slate-500 mb-1 block">처리 주기</label>
+            <div className="grid grid-cols-4 gap-2">
+              {PERIOD_PRESETS.map((p) => (
+                <button
+                  key={p.label}
+                  type="button"
+                  onClick={() => selectPreset(periodModeFor(p.days), p.days)}
+                  className={`rounded-lg py-2 text-xs font-medium ${
+                    periodMode === periodModeFor(p.days) ? 'bg-[#8b5e3c] text-white' : 'bg-slate-100 text-slate-500'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => selectPreset('custom')}
+                className={`rounded-lg py-2 text-xs font-medium ${
+                  periodMode === 'custom' ? 'bg-[#8b5e3c] text-white' : 'bg-slate-100 text-slate-500'
+                }`}
+              >
+                기타
+              </button>
+            </div>
+            {periodMode === 'custom' && (
+              <input
+                type="number"
+                min={1}
+                required
+                value={periodDays}
+                placeholder="며칠마다?"
+                onChange={(e) => setPeriodDays(e.target.value)}
+                className="w-full mt-2 rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[#8b5e3c]"
+              />
+            )}
           </div>
         ) : (
           <div>
@@ -248,6 +337,16 @@ function ChoreFormModal({
             {saving ? '저장 중...' : '저장'}
           </button>
         </div>
+
+        {onDelete && (
+          <button
+            type="button"
+            onClick={() => setConfirmingDelete(true)}
+            className="w-full rounded-lg border border-rose-200 hover:bg-rose-50 py-2.5 font-medium text-rose-500"
+          >
+            삭제
+          </button>
+        )}
       </form>
     </div>
   )
