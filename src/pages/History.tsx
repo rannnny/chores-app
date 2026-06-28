@@ -38,6 +38,16 @@ export default function History() {
     load()
   }, [])
 
+  useEffect(() => {
+    if (!swipedId) return
+    function handleOutsidePointerDown(e: PointerEvent) {
+      const target = e.target as HTMLElement
+      if (!target.closest(`[data-swipe-id="${swipedId}"]`)) setSwipedId(null)
+    }
+    document.addEventListener('pointerdown', handleOutsidePointerDown)
+    return () => document.removeEventListener('pointerdown', handleOutsidePointerDown)
+  }, [swipedId])
+
   const formatDate = (date: string) => date.slice(2).replace(/-/g, '.')
 
   const choreById = (id: string) => chores.find((c) => c.id === id)
@@ -207,7 +217,7 @@ export default function History() {
           </div>
           <ul className="divide-y divide-slate-100 select-none">
           {filteredLogs.map((log) => (
-            <li key={log.id} className="relative overflow-hidden">
+            <li key={log.id} data-swipe-id={log.id} className="relative overflow-hidden">
               <div className="absolute inset-y-0 right-0 w-20">
                 <button
                   onClick={() => handleDeleteLog(log)}
