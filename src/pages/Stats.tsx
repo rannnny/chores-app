@@ -195,14 +195,12 @@ export default function Stats() {
         ) : (
           <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm">
             <colgroup>
-              <col className="w-[36%]" />
-              <col className="w-[26%]" />
+              <col className="w-[62%]" />
               <col className="w-[38%]" />
             </colgroup>
             <thead>
               <tr className="bg-slate-50 text-center text-xs text-slate-400">
                 <th className="py-2 px-3 font-medium">집안일</th>
-                <th className="py-2 px-3 font-medium">예정일</th>
                 <th className="py-2 px-3 font-medium">처리현황</th>
               </tr>
             </thead>
@@ -210,7 +208,6 @@ export default function Stats() {
               {onceStats.map(({ chore, count }) => (
                 <tr key={chore.id}>
                   <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
-                  <td className="py-3 px-3 text-center text-slate-400">{chore.due_date ?? '-'}</td>
                   <td className="py-3 px-3 text-center">
                     <span className={`font-semibold ${count > 0 ? 'text-slate-900' : 'text-slate-400'}`}>
                       {count > 0 ? '처리완료 ✅' : '미처리'}
