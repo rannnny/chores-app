@@ -100,20 +100,12 @@ export default function Home() {
     [chores, selectedDate]
   )
 
-  const dueDatesInMonth = useMemo(() => {
-    const map = new Map<string, ChoreWithStatus[]>()
-    const add = (date: string | null, chore: ChoreWithStatus) => {
-      if (!date) return
-      const list = map.get(date) ?? []
-      list.push(chore)
-      map.set(date, list)
-    }
-    for (const c of chores) {
-      add(c.next_due_date, c)
-      add(c.last_done_date, c)
-    }
-    return map
-  }, [chores])
+  // 완료 전까지는 기한일 이후 모든 날짜에 표시한다(오늘 할 일 목록과 동일한 기준).
+  function dueChoresOnDay(dayKey: string): ChoreWithStatus[] {
+    return chores.filter(
+      (c) => c.last_done_date === dayKey || (!!c.next_due_date && c.next_due_date <= dayKey)
+    )
+  }
 
   const monthStart = startOfMonth(month)
   const monthEnd = endOfMonth(month)
@@ -314,7 +306,7 @@ export default function Home() {
               >
                 {weekDays.map((day) => {
                   const key = format(day, 'yyyy-MM-dd')
-                  const dueChores = dueDatesInMonth.get(key) ?? []
+                  const dueChores = dueChoresOnDay(key)
                   const isPast = key < today
                   const dow = day.getDay()
                   const holidayNames = HOLIDAYS[key]

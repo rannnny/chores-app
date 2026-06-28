@@ -164,19 +164,19 @@ export default function Stats() {
           <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm">
             <colgroup>
               <col className="w-[50%]" />
-              <col className="w-[18%]" />
-              <col className="w-[32%]" />
+              <col className="w-[25%]" />
+              <col className="w-[25%]" />
             </colgroup>
             <thead>
-              <tr className="text-center text-xs text-slate-400 divide-x divide-slate-200">
+              <tr className="text-center text-xs text-slate-400">
                 <th className="py-2 px-3 font-medium">
-                  <span className="inline-block rounded-full bg-slate-100 px-2.5 py-1">집안일</span>
+                  <span className="inline-block rounded-full bg-white px-2.5 py-1">집안일</span>
                 </th>
                 <th className="py-2 px-3 font-medium">
-                  <span className="inline-block rounded-full bg-slate-100 px-2.5 py-1">주기</span>
+                  <span className="inline-block rounded-full bg-white px-2.5 py-1">주기</span>
                 </th>
                 <th className="py-2 px-3 font-medium">
-                  <span className="inline-block rounded-full bg-slate-100 px-2.5 py-1">처리현황</span>
+                  <span className="inline-block rounded-full bg-white px-2.5 py-1">처리현황</span>
                 </th>
               </tr>
             </thead>
@@ -212,12 +212,12 @@ export default function Stats() {
               <col className="w-[32%]" />
             </colgroup>
             <thead>
-              <tr className="text-center text-xs text-slate-400 divide-x divide-slate-200">
+              <tr className="text-center text-xs text-slate-400">
                 <th className="py-2 px-3 font-medium">
-                  <span className="inline-block rounded-full bg-slate-100 px-2.5 py-1">집안일</span>
+                  <span className="inline-block rounded-full bg-white px-2.5 py-1">집안일</span>
                 </th>
                 <th className="py-2 px-3 font-medium">
-                  <span className="inline-block rounded-full bg-slate-100 px-2.5 py-1">처리현황</span>
+                  <span className="inline-block rounded-full bg-white px-2.5 py-1">처리현황</span>
                 </th>
               </tr>
             </thead>

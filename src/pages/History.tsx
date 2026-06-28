@@ -137,10 +137,12 @@ export default function History() {
         </svg>
       </div>
 
-      <div className="flex items-center gap-2">
-        <YearMonthSelect value={startMonth} onChange={setStartMonth} years={years} />
-        <span className="text-slate-400 text-sm shrink-0">~</span>
-        <YearMonthSelect value={endMonth} onChange={setEndMonth} years={years} />
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <YearMonthSelect value={startMonth} onChange={setStartMonth} years={years} />
+          <span className="text-slate-400 text-sm shrink-0">~</span>
+          <YearMonthSelect value={endMonth} onChange={setEndMonth} years={years} />
+        </div>
         <button
           onClick={() => {
             if (!startMonth && !endMonth) {
@@ -152,7 +154,7 @@ export default function History() {
               setEndMonth('')
             }
           }}
-          className={`rounded-lg border text-sm px-3 py-2.5 shrink-0 font-medium ${
+          className={`w-full rounded-lg border text-sm px-3 py-2.5 font-medium ${
             !startMonth && !endMonth
               ? 'border-slate-700 bg-slate-700 text-white'
               : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-500'
@@ -342,24 +344,40 @@ function YearMonthSelect({
   onChange: (value: string) => void
   years: number[]
 }) {
-  const months = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'))
+  const [y, m] = value ? value.split('-') : ['', '']
+  const selectClass =
+    'flex-1 min-w-0 rounded-lg border border-slate-200 px-1 py-2.5 outline-none focus:border-[#FF922B] bg-white text-sm text-slate-900 appearance-none text-center'
+  const selectStyle: React.CSSProperties = { textAlign: 'center', textAlignLast: 'center' }
 
   return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="flex-1 min-w-0 rounded-lg border border-slate-200 px-1 py-2.5 outline-none focus:border-[#FF922B] bg-white text-sm text-slate-900 appearance-none text-center"
-    >
-      <option value="">전체</option>
-      {years.map((yr) => (
-        <optgroup key={yr} label={`${yr}년`}>
-          {months.map((mm) => (
-            <option key={`${yr}-${mm}`} value={`${yr}-${mm}`}>
-              {yr}년 {Number(mm)}월
-            </option>
-          ))}
-        </optgroup>
-      ))}
-    </select>
+    <div className="flex gap-1 flex-1">
+      <select
+        value={y}
+        onChange={(e) => onChange(e.target.value ? `${e.target.value}-${m || '01'}` : '')}
+        className={selectClass}
+        style={selectStyle}
+      >
+        <option value="">전체</option>
+        {years.map((yr) => (
+          <option key={yr} value={yr}>
+            {yr}년
+          </option>
+        ))}
+      </select>
+      <select
+        value={m}
+        onChange={(e) => onChange(`${y || new Date().getFullYear()}-${e.target.value}`)}
+        disabled={!y}
+        className={selectClass}
+        style={selectStyle}
+      >
+        <option value="">전체</option>
+        {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map((mm) => (
+          <option key={mm} value={mm}>
+            {Number(mm)}월
+          </option>
+        ))}
+      </select>
+    </div>
   )
 }
