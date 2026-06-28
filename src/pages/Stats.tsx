@@ -227,7 +227,7 @@ export default function Stats() {
                   <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
                   <td className="py-3 px-3 text-center">
                     <span className={`font-semibold ${count > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
-                      {count}/1회
+                      {count > 0 ? '완료' : '미처리'}
                     </span>
                   </td>
                 </tr>

@@ -203,7 +203,7 @@ export default function History() {
           <div className="flex items-center justify-between gap-3 bg-slate-50 rounded-lg px-3 py-2 mb-1 text-xs font-semibold text-slate-500">
             <span className="shrink-0 w-14 text-center">처리날짜</span>
             <span className="flex-1 text-center">집안일</span>
-            <span className="shrink-0 max-w-[140px] text-center">메모</span>
+            <span className="shrink-0 w-[100px] text-center">메모</span>
           </div>
           <ul className="divide-y divide-slate-100 select-none">
           {filteredLogs.map((log) => (
@@ -235,7 +235,7 @@ export default function History() {
                   if (swipedId === log.id) setSwipedId(null)
                 }}
                 style={{ transform: swipedId === log.id ? 'translateX(-80px)' : 'translateX(0)' }}
-                className="relative bg-white flex items-center justify-between gap-3 py-2.5 transition-transform active:bg-slate-50"
+                className="relative bg-white flex items-center justify-between gap-3 px-3 py-2.5 transition-transform active:bg-slate-50"
               >
                 <p className="text-xs text-slate-400 shrink-0 w-14 text-center">{formatDate(log.done_date)}</p>
                 <p className="text-sm font-semibold text-slate-900 truncate min-w-0 flex-1 flex items-center gap-1.5">
@@ -259,7 +259,7 @@ export default function History() {
                     e.stopPropagation()
                     handleMemoClick(log)
                   }}
-                  className="text-xs text-slate-400 hover:text-[#FF922B] shrink-0 max-w-[140px] truncate select-none"
+                  className="text-xs text-slate-400 hover:text-[#FF922B] shrink-0 w-[100px] text-center truncate select-none"
                   aria-label="메모"
                   title={log.memo ?? '메모 추가'}
                 >

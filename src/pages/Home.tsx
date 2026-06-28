@@ -103,7 +103,9 @@ export default function Home() {
   // 완료 전까지는 기한일 이후 모든 날짜에 표시한다(오늘 할 일 목록과 동일한 기준).
   function dueChoresOnDay(dayKey: string): ChoreWithStatus[] {
     return chores.filter(
-      (c) => c.last_done_date === dayKey || (!!c.next_due_date && c.next_due_date <= dayKey)
+      (c) =>
+        c.last_done_date === dayKey ||
+        (!!c.next_due_date && c.next_due_date <= dayKey && dayKey <= today)
     )
   }
 
