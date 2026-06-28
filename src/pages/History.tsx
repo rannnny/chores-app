@@ -9,8 +9,10 @@ export default function History() {
   const [chores, setChores] = useState<Chore[]>([])
   const [loading, setLoading] = useState(true)
   const [choreFilter, setChoreFilter] = useState('all')
-  const [startMonth, setStartMonth] = useState('')
-  const [endMonth, setEndMonth] = useState('')
+  const now = new Date()
+  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const [startMonth, setStartMonth] = useState(currentMonth)
+  const [endMonth, setEndMonth] = useState(currentMonth)
   const [editingLog, setEditingLog] = useState<ChoreLog | null>(null)
   const [viewingMemo, setViewingMemo] = useState<ChoreLog | null>(null)
   const longPressTimerRef = useRef<number | null>(null)
@@ -326,7 +328,7 @@ function YearMonthSelect({
 }) {
   const [y, m] = value ? value.split('-') : ['', '']
   const selectClass =
-    "flex-1 rounded-lg border border-slate-200 px-2 py-2.5 outline-none focus:border-[#FF922B] bg-white text-sm text-slate-900 appearance-none"
+    "flex-1 rounded-lg border border-slate-200 px-2 py-2.5 outline-none focus:border-[#FF922B] bg-white text-sm text-slate-900 appearance-none text-center"
 
   return (
     <div className="flex gap-1 flex-1">
