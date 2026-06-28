@@ -89,25 +89,23 @@ export default function Home() {
   const profileEmoji = (id: string | null) => profiles.find((p) => p.id === id)?.emoji ?? ''
 
   const today = todayStr()
+
+  // 예정일이 미래면 그 날짜에만, 기한이 지났거나 오늘이면 항상 "오늘"에만 표시한다.
+  // 처리하지 않은 날은 다음날로 그냥 넘어갈 뿐, 과거 날짜에는 남지 않는다(이력도 안 남음).
+  function isChoreDueOn(c: ChoreWithStatus, dayKey: string): boolean {
+    if (c.last_done_date === dayKey) return true
+    if (!c.next_due_date) return false
+    if (c.next_due_date > today) return c.next_due_date === dayKey
+    return dayKey === today
+  }
+
   const dueList = useMemo(
-    () =>
-      chores.filter((c) => {
-        if (c.last_done_date === selectedDate) return true
-        if (!c.next_due_date) return false
-        // 기한이 지나도 처리하기 전까지 계속 표시한다.
-        return c.next_due_date <= selectedDate
-      }),
-    [chores, selectedDate]
+    () => chores.filter((c) => isChoreDueOn(c, selectedDate)),
+    [chores, selectedDate, today]
   )
 
-  // 예정일이 미래면 그 날짜에, 기한이 지났거나 오늘이면 항상 "오늘"에만 표시한다(과거 기한일에는 안 남고 매일 오늘로 옮겨간다).
   function dueChoresOnDay(dayKey: string): ChoreWithStatus[] {
-    return chores.filter((c) => {
-      if (c.last_done_date === dayKey) return true
-      if (!c.next_due_date) return false
-      if (c.next_due_date > today) return c.next_due_date === dayKey
-      return dayKey === today
-    })
+    return chores.filter((c) => isChoreDueOn(c, dayKey))
   }
 
   const monthStart = startOfMonth(month)
