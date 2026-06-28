@@ -98,7 +98,7 @@ export default function History() {
               </p>
               <button
                 onClick={() => setEditingLog(log)}
-                className="text-xs text-slate-400 hover:text-[#FF922B] shrink-0 max-w-[88px] truncate"
+                className="text-xs text-slate-400 hover:text-[#FF922B] shrink-0 max-w-[140px] truncate"
                 aria-label="메모"
                 title={log.memo ?? '메모 추가'}
               >
