@@ -11,6 +11,7 @@ export interface Chore {
   period_days: number | null
   due_date: string | null
   archived: boolean
+  sort_order: number
   created_at: string
 }
 

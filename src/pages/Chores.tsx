@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useToast } from '../components/Toast'
 import { CheckCircleIcon, PencilIcon, PlusIcon, RepeatIcon } from '../components/icons'
-import { archiveChore, createChore, getChoresWithStatus, updateChore } from '../lib/data'
+import { archiveChore, createChore, getChoresWithStatus, reorderChores, updateChore } from '../lib/data'
 import type { ChoreWithStatus } from '../types/index'
 
 export default function Chores() {
@@ -23,6 +23,11 @@ export default function Chores() {
   async function handleArchive(id: string) {
     await archiveChore(id)
     showToast('삭제했어요')
+    load()
+  }
+
+  async function handleReorder(ids: string[]) {
+    await reorderChores(ids)
     load()
   }
 
@@ -69,7 +74,12 @@ export default function Chores() {
               <RepeatIcon />
               <h3 className="text-sm font-semibold">꾸준히 반복되는 일</h3>
             </div>
-            {renderCards(recurringChores, '등록된 반복 작업이 없어요.', (c) => `${c.period_days}일 주기`)}
+            <RecurringList
+              list={recurringChores}
+              tag={(c) => `${c.period_days}일 주기`}
+              onEdit={setEditing}
+              onReorder={handleReorder}
+            />
           </section>
           <section className="bg-slate-50 rounded-2xl p-3">
             <div className="flex items-center gap-1.5 mb-2 px-1 text-slate-500">
@@ -107,6 +117,115 @@ export default function Chores() {
           }
         />
       )}
+    </div>
+  )
+}
+
+function RecurringList({
+  list,
+  tag,
+  onEdit,
+  onReorder,
+}: {
+  list: ChoreWithStatus[]
+  tag: (chore: ChoreWithStatus) => string
+  onEdit: (chore: ChoreWithStatus) => void
+  onReorder: (ids: string[]) => void
+}) {
+  const [order, setOrder] = useState(list)
+  const [draggingId, setDraggingId] = useState<string | null>(null)
+  const itemRefs = useRef(new Map<string, HTMLDivElement>())
+  const longPressTimerRef = useRef<number | null>(null)
+  const draggingRef = useRef(false)
+
+  useEffect(() => {
+    if (!draggingRef.current) setOrder(list)
+  }, [list])
+
+  function clearLongPressTimer() {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
+    }
+  }
+
+  function handlePointerDownItem(id: string) {
+    clearLongPressTimer()
+    longPressTimerRef.current = window.setTimeout(() => {
+      draggingRef.current = true
+      setDraggingId(id)
+    }, 450)
+  }
+
+  function endDrag() {
+    clearLongPressTimer()
+    if (draggingRef.current) {
+      draggingRef.current = false
+      setDraggingId(null)
+      onReorder(order.map((c) => c.id))
+    }
+  }
+
+  function handlePointerMove(e: React.PointerEvent) {
+    if (!draggingId) return
+    const y = e.clientY
+    const draggingIndex = order.findIndex((c) => c.id === draggingId)
+    for (let i = 0; i < order.length; i++) {
+      if (i === draggingIndex) continue
+      const el = itemRefs.current.get(order[i].id)
+      if (!el) continue
+      const rect = el.getBoundingClientRect()
+      const mid = rect.top + rect.height / 2
+      if ((i < draggingIndex && y < mid) || (i > draggingIndex && y > mid)) {
+        const newOrder = [...order]
+        const [item] = newOrder.splice(draggingIndex, 1)
+        newOrder.splice(i, 0, item)
+        setOrder(newOrder)
+        break
+      }
+    }
+  }
+
+  if (order.length === 0) {
+    return <p className="text-sm text-slate-400 py-6 text-center">등록된 반복 작업이 없어요.</p>
+  }
+
+  return (
+    <div className="space-y-2" onPointerMove={handlePointerMove}>
+      {order.map((chore) => (
+        <div
+          key={chore.id}
+          ref={(el) => {
+            if (el) itemRefs.current.set(chore.id, el)
+            else itemRefs.current.delete(chore.id)
+          }}
+          onPointerDown={() => handlePointerDownItem(chore.id)}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onContextMenu={(e) => e.preventDefault()}
+          style={{ touchAction: 'none' }}
+          className={`bg-white rounded-lg p-3 flex items-center justify-between gap-2 shadow-sm select-none transition ${
+            draggingId === chore.id ? 'opacity-60 scale-[1.02] shadow-lg' : ''
+          }`}
+        >
+          <p className="text-sm font-medium text-slate-700 truncate">{chore.name}</p>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="rounded-full bg-slate-100 text-slate-500 text-xs px-2.5 py-1 font-medium">
+              {tag(chore)}
+            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onEdit(chore)
+              }}
+              className="text-slate-400 hover:text-[#FF922B] p-1"
+              aria-label="수정"
+            >
+              <PencilIcon />
+            </button>
+          </div>
+        </div>
+      ))}
     </div>
   )
 }

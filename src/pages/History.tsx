@@ -177,7 +177,7 @@ export default function History() {
               onContextMenu={(e) => e.preventDefault()}
               className="flex items-center justify-between gap-3 py-2.5 active:bg-slate-50"
             >
-              <p className="text-xs text-slate-400 shrink-0">{formatDate(log.done_date)}</p>
+              <p className="text-xs text-slate-400 shrink-0 w-14 text-center">{formatDate(log.done_date)}</p>
               <p className="text-sm font-semibold text-slate-900 truncate min-w-0 flex-1 flex items-center gap-1.5">
                 <span className="text-slate-400 shrink-0">
                   {choreById(log.chore_id)?.period_days != null ? <RepeatIcon /> : <CheckCircleIcon />}

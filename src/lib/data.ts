@@ -36,7 +36,7 @@ export async function getAllProfiles(): Promise<Profile[]> {
 }
 
 export async function getChoresWithStatus(includeArchived = false): Promise<ChoreWithStatus[]> {
-  const choresQuery = supabase.from('chores').select('*').order('created_at')
+  const choresQuery = supabase.from('chores').select('*').order('sort_order').order('created_at')
   const { data: chores, error: choresError } = includeArchived
     ? await choresQuery
     : await choresQuery.eq('archived', false)
@@ -82,11 +82,17 @@ export async function createChore(
 ): Promise<Chore> {
   const { data, error } = await supabase
     .from('chores')
-    .insert({ name, period_days: periodDays, due_date: periodDays === null ? dueDate : null })
+    .insert({ name, period_days: periodDays, due_date: periodDays === null ? dueDate : null, sort_order: Date.now() })
     .select()
     .single()
   if (error) throw error
   return data
+}
+
+export async function reorderChores(idsInOrder: string[]): Promise<void> {
+  await Promise.all(
+    idsInOrder.map((id, index) => supabase.from('chores').update({ sort_order: index }).eq('id', id))
+  )
 }
 
 export async function updateChore(

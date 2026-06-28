@@ -202,8 +202,8 @@ export default function Stats() {
         ) : (
           <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm">
             <colgroup>
-              <col className="w-[62%]" />
-              <col className="w-[38%]" />
+              <col className="w-[68%]" />
+              <col className="w-[32%]" />
             </colgroup>
             <thead>
               <tr className="bg-white text-center text-xs text-slate-400 divide-x divide-slate-200">
