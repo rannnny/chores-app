@@ -174,7 +174,7 @@ export default function Stats() {
                 <th className="py-2 px-3 font-medium">처리현황</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody>
               {recurringStats.map(({ chore, count, expected, onTrack, delayed }) => (
                 <tr key={chore.id} className="divide-x divide-slate-200">
                   <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
@@ -211,7 +211,7 @@ export default function Stats() {
                 <th className="py-2 px-3 font-medium">처리현황</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody>
               {onceStats.map(({ chore, count }) => (
                 <tr key={chore.id} className="divide-x divide-slate-200">
                   <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
