@@ -353,7 +353,7 @@ export default function Home() {
       </section>
 
       <section>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2 tracking-tight leading-snug">
+        <h2 className="text-lg font-bold text-slate-700 mb-2 leading-snug">
           {selectedDate === today ? '오늘 할 일' : `${selectedDate} 할 일`}
           {dueList.length > 0 && ` (${dueList.length})`}
         </h2>
