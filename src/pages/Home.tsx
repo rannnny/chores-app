@@ -5,7 +5,6 @@ import {
   endOfMonth,
   endOfWeek,
   format,
-  isSameDay,
   isSameMonth,
   isToday,
   startOfMonth,
@@ -335,8 +334,8 @@ export default function Home() {
                         {dueChores.length > 0 && (
                           <span
                             className={`w-1.5 h-1.5 rounded-full ${
-                              isPast && !isSameDay(day, new Date()) ? 'bg-rose-400' : 'bg-amber-400'
-                            } ${isToday(day) ? '!bg-white' : ''}`}
+                              isToday(day) ? 'bg-white' : isPast ? 'bg-slate-400' : 'bg-rose-400'
+                            }`}
                           />
                         )}
                       </span>
