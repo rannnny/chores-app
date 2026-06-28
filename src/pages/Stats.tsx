@@ -164,8 +164,8 @@ export default function Stats() {
           <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm">
             <colgroup>
               <col className="w-[50%]" />
-              <col className="w-[12%]" />
-              <col className="w-[38%]" />
+              <col className="w-[18%]" />
+              <col className="w-[32%]" />
             </colgroup>
             <thead>
               <tr className="bg-white text-center text-xs text-slate-400 divide-x divide-slate-200">
@@ -217,7 +217,7 @@ export default function Stats() {
                   <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
                   <td className="py-3 px-3 text-center">
                     <span className={`font-semibold ${count > 0 ? 'text-slate-900' : 'text-slate-400'}`}>
-                      {count > 0 ? '처리완료 ✅' : '미처리'}
+                      {count > 0 ? '완료 ✅' : '미처리'}
                     </span>
                   </td>
                 </tr>

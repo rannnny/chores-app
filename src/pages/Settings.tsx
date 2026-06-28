@@ -85,8 +85,8 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-12 pt-4 pb-10">
-      <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug">설정</h2>
+    <div className="min-h-full flex flex-col pt-4 pb-10">
+      <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug mb-12">설정</h2>
 
       <div className="space-y-8">
         <AccordionSection label="닉네임" open={nicknameOpen} onToggle={() => setNicknameOpen((o) => !o)}>
@@ -145,7 +145,9 @@ export default function Settings() {
         </AccordionSection>
       </div>
 
-      <div className="text-center">
+      <div className="flex-1" />
+
+      <div className="text-center pt-12">
         <button onClick={() => supabase.auth.signOut()} className="text-sm text-slate-400 hover:text-slate-600">
           로그아웃
         </button>

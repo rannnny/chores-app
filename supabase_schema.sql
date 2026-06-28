@@ -37,10 +37,12 @@ create table if not exists chores (
   period_days integer check (period_days is null or period_days > 0),
   due_date date,
   archived boolean not null default false,
+  sort_order bigint not null default 0,
   created_at timestamptz not null default now()
 );
 
 alter table chores add column if not exists due_date date;
+alter table chores add column if not exists sort_order bigint not null default 0;
 
 alter table chores enable row level security;
 
