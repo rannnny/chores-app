@@ -362,7 +362,7 @@ export default function Home() {
             {selectedDate === today ? '오늘은 할 일이 없어요 🎉' : '이 날에는 할 일이 없어요'}
           </p>
         ) : (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2">
             {dueList.map((chore) => {
               const doneOnSelected = chore.last_done_date === selectedDate
               const overdue = !doneOnSelected && !!chore.next_due_date && chore.next_due_date < selectedDate
