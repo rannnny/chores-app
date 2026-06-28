@@ -186,8 +186,8 @@ export default function Stats() {
                   <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
                   <td className="py-3 px-3 text-center text-slate-400">{chore.period_days}일</td>
                   <td className="py-3 px-3 text-center">
-                    <span className={`font-semibold ${onTrack ? 'text-slate-900' : 'text-rose-500'}`}>
-                      {count}/{expected} {onTrack ? '✅' : '⚠️'}
+                    <span className={`font-semibold ${onTrack ? 'text-emerald-600' : 'text-rose-500'}`}>
+                      {count}/{expected}회
                     </span>
                     {delayed > 0 && <p className="text-xs text-amber-500">지연 {delayed}회</p>}
                   </td>
@@ -226,8 +226,8 @@ export default function Stats() {
                 <tr key={chore.id} className="divide-x divide-slate-200">
                   <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
                   <td className="py-3 px-3 text-center">
-                    <span className={`font-semibold ${count > 0 ? 'text-slate-900' : 'text-slate-400'}`}>
-                      {count > 0 ? '완료 ✅' : '미처리'}
+                    <span className={`font-semibold ${count > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
+                      {count}/1회
                     </span>
                   </td>
                 </tr>

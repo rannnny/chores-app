@@ -5,6 +5,7 @@ import { deleteLog, getAllLogs, getChoresWithStatus, updateLogMemo } from '../li
 import type { Chore, ChoreLog } from '../types/index'
 
 export default function History() {
+  const showToast = useToast()
   const [logs, setLogs] = useState<ChoreLog[]>([])
   const [chores, setChores] = useState<Chore[]>([])
   const [loading, setLoading] = useState(true)
@@ -16,10 +17,13 @@ export default function History() {
   const [savedFilter, setSavedFilter] = useState({ start: currentMonth, end: currentMonth })
   const [editingLog, setEditingLog] = useState<ChoreLog | null>(null)
   const [viewingMemo, setViewingMemo] = useState<ChoreLog | null>(null)
+  const [swipedId, setSwipedId] = useState<string | null>(null)
   const longPressTimerRef = useRef<number | null>(null)
   const longPressFiredRef = useRef(false)
   const memoPressTimerRef = useRef<number | null>(null)
   const memoLongPressFiredRef = useRef(false)
+  const swipeStartXRef = useRef<number | null>(null)
+  const swipeIdRef = useRef<string | null>(null)
 
   async function load() {
     setLoading(true)
@@ -96,6 +100,35 @@ export default function History() {
     else setEditingLog(log)
   }
 
+  function handleSwipeStart(e: React.PointerEvent, id: string) {
+    swipeStartXRef.current = e.clientX
+    swipeIdRef.current = id
+  }
+
+  function handleSwipeMove(e: React.PointerEvent, id: string) {
+    if (swipeStartXRef.current == null || swipeIdRef.current !== id) return
+    const delta = e.clientX - swipeStartXRef.current
+    if (delta < -30) {
+      handlePressEnd()
+      setSwipedId(id)
+    } else if (delta > 15) {
+      setSwipedId(null)
+    }
+  }
+
+  function handleSwipeEnd() {
+    swipeStartXRef.current = null
+    swipeIdRef.current = null
+  }
+
+  async function handleDeleteLog(log: ChoreLog) {
+    if (!confirm('이 처리 기록을 삭제할까요?')) return
+    await deleteLog(log.id)
+    setSwipedId(null)
+    showToast('삭제했어요')
+    load()
+  }
+
   return (
     <div className="space-y-4 pt-4">
       <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug">처리 이력</h2>
@@ -167,49 +200,72 @@ export default function History() {
         <p className="text-sm text-slate-400 py-10 text-center">처리 기록이 없어요.</p>
       ) : (
         <>
-          <div className="flex items-center justify-between gap-3 px-0.5 pb-1 text-xs text-slate-400">
+          <div className="flex items-center justify-between gap-3 bg-slate-50 rounded-lg px-3 py-2 mb-1 text-xs font-semibold text-slate-500">
             <span className="shrink-0 w-14 text-center">처리날짜</span>
-            <span className="flex-1">집안일</span>
-            <span className="shrink-0 max-w-[140px]">메모</span>
+            <span className="flex-1 text-center">집안일</span>
+            <span className="shrink-0 max-w-[140px] text-center">메모</span>
           </div>
           <ul className="divide-y divide-slate-100 select-none">
           {filteredLogs.map((log) => (
-            <li
-              key={log.id}
-              onPointerDown={() => handlePressStart(log)}
-              onPointerUp={handlePressEnd}
-              onPointerLeave={handlePressEnd}
-              onContextMenu={(e) => e.preventDefault()}
-              className="flex items-center justify-between gap-3 py-2.5 active:bg-slate-50"
-            >
-              <p className="text-xs text-slate-400 shrink-0 w-14 text-center">{formatDate(log.done_date)}</p>
-              <p className="text-sm font-semibold text-slate-900 truncate min-w-0 flex-1 flex items-center gap-1.5">
-                <span className="text-slate-400 shrink-0">
-                  {choreById(log.chore_id)?.period_days != null ? <RepeatIcon /> : <CheckCircleIcon />}
-                </span>
-                <span className="truncate">{choreName(log.chore_id)}</span>
-              </p>
-              <button
+            <li key={log.id} className="relative overflow-hidden">
+              <div className="absolute inset-y-0 right-0 w-20">
+                <button
+                  onClick={() => handleDeleteLog(log)}
+                  className="w-full h-full bg-rose-500 hover:bg-rose-600 text-white text-sm font-medium"
+                >
+                  삭제
+                </button>
+              </div>
+              <div
                 onPointerDown={(e) => {
-                  e.stopPropagation()
-                  handleMemoPressStart(log)
+                  handlePressStart(log)
+                  handleSwipeStart(e, log.id)
                 }}
-                onPointerUp={(e) => {
-                  e.stopPropagation()
-                  handleMemoPressEnd()
+                onPointerMove={(e) => handleSwipeMove(e, log.id)}
+                onPointerUp={() => {
+                  handlePressEnd()
+                  handleSwipeEnd()
                 }}
-                onPointerLeave={handleMemoPressEnd}
+                onPointerLeave={() => {
+                  handlePressEnd()
+                  handleSwipeEnd()
+                }}
                 onContextMenu={(e) => e.preventDefault()}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleMemoClick(log)
+                onClick={() => {
+                  if (swipedId === log.id) setSwipedId(null)
                 }}
-                className="text-xs text-slate-400 hover:text-[#FF922B] shrink-0 max-w-[140px] truncate select-none"
-                aria-label="메모"
-                title={log.memo ?? '메모 추가'}
+                style={{ transform: swipedId === log.id ? 'translateX(-80px)' : 'translateX(0)' }}
+                className="relative bg-white flex items-center justify-between gap-3 py-2.5 transition-transform active:bg-slate-50"
               >
-                {log.memo || '📝'}
-              </button>
+                <p className="text-xs text-slate-400 shrink-0 w-14 text-center">{formatDate(log.done_date)}</p>
+                <p className="text-sm font-semibold text-slate-900 truncate min-w-0 flex-1 flex items-center gap-1.5">
+                  <span className="text-slate-400 shrink-0">
+                    {choreById(log.chore_id)?.period_days != null ? <RepeatIcon /> : <CheckCircleIcon />}
+                  </span>
+                  <span className="truncate">{choreName(log.chore_id)}</span>
+                </p>
+                <button
+                  onPointerDown={(e) => {
+                    e.stopPropagation()
+                    handleMemoPressStart(log)
+                  }}
+                  onPointerUp={(e) => {
+                    e.stopPropagation()
+                    handleMemoPressEnd()
+                  }}
+                  onPointerLeave={handleMemoPressEnd}
+                  onContextMenu={(e) => e.preventDefault()}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleMemoClick(log)
+                  }}
+                  className="text-xs text-slate-400 hover:text-[#FF922B] shrink-0 max-w-[140px] truncate select-none"
+                  aria-label="메모"
+                  title={log.memo ?? '메모 추가'}
+                >
+                  {log.memo || '📝'}
+                </button>
+              </div>
             </li>
           ))}
           </ul>
@@ -278,10 +334,12 @@ function EditLogModal({
     onSaved()
   }
 
-  async function handleRestore() {
-    if (!confirm('이 처리 기록을 복원(취소)할까요? 처리하지 않은 상태로 돌아가요.')) return
-    await deleteLog(log.id)
-    showToast('복원했어요')
+  async function handleDeleteMemo() {
+    setSaving(true)
+    await updateLogMemo(log.id, null)
+    setMemo('')
+    setSaving(false)
+    showToast('메모를 삭제했어요')
     onSaved()
   }
 
@@ -308,10 +366,11 @@ function EditLogModal({
         </div>
         <div className="flex gap-2">
           <button
-            onClick={onClose}
-            className="flex-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 font-medium"
+            onClick={handleDeleteMemo}
+            disabled={saving || !memo}
+            className="flex-1 rounded-lg border border-rose-200 hover:bg-rose-50 disabled:opacity-50 py-2.5 font-medium text-rose-500"
           >
-            닫기
+            삭제
           </button>
           <button
             onClick={handleSaveMemo}
@@ -321,12 +380,6 @@ function EditLogModal({
             저장
           </button>
         </div>
-        <button
-          onClick={handleRestore}
-          className="w-full rounded-lg border border-rose-200 hover:bg-rose-50 py-2.5 font-medium text-rose-500"
-        >
-          처리 취소
-        </button>
       </div>
     </div>
   )
