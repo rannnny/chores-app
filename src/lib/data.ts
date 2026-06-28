@@ -140,6 +140,25 @@ export async function updateLogMemo(id: string, memo: string | null): Promise<vo
   if (error) throw error
 }
 
+export async function uploadLogPhoto(logId: string, file: File): Promise<string> {
+  const ext = file.name.split('.').pop() ?? 'jpg'
+  const path = `${logId}/${Date.now()}.${ext}`
+  const { error: uploadError } = await supabase.storage.from('chore-photos').upload(path, file)
+  if (uploadError) throw uploadError
+  const { data } = supabase.storage.from('chore-photos').getPublicUrl(path)
+  const { error: updateError } = await supabase
+    .from('chore_logs')
+    .update({ photo_url: data.publicUrl })
+    .eq('id', logId)
+  if (updateError) throw updateError
+  return data.publicUrl
+}
+
+export async function deleteLogPhoto(id: string): Promise<void> {
+  const { error } = await supabase.from('chore_logs').update({ photo_url: null }).eq('id', id)
+  if (error) throw error
+}
+
 export async function deleteLog(id: string): Promise<void> {
   const { error } = await supabase.from('chore_logs').delete().eq('id', id)
   if (error) throw error

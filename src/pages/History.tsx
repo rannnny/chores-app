@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useToast } from '../components/Toast'
 import { CheckCircleIcon, RepeatIcon } from '../components/icons'
-import { deleteLog, getAllLogs, getChoresWithStatus, updateLogMemo } from '../lib/data'
+import { deleteLog, deleteLogPhoto, getAllLogs, getChoresWithStatus, updateLogMemo, uploadLogPhoto } from '../lib/data'
 import type { Chore, ChoreLog } from '../types/index'
 
 export default function History() {
@@ -106,7 +106,7 @@ export default function History() {
       memoLongPressFiredRef.current = false
       return
     }
-    if (log.memo) setViewingMemo(log)
+    if (log.memo || log.photo_url) setViewingMemo(log)
     else setEditingLog(log)
   }
 
@@ -273,7 +273,7 @@ export default function History() {
                   aria-label="메모"
                   title={log.memo ?? '메모 추가'}
                 >
-                  {log.memo || '📝'}
+                  {log.memo || (log.photo_url ? '📷' : '📝')}
                 </button>
               </div>
             </li>
@@ -291,6 +291,7 @@ export default function History() {
             setEditingLog(null)
             load()
           }}
+          onPhotoChanged={load}
         />
       )}
 
@@ -307,7 +308,16 @@ export default function History() {
               {choreName(viewingMemo.chore_id)}
             </h3>
             <p className="text-xs text-slate-400">{formatDate(viewingMemo.done_date)}</p>
-            <p className="text-base text-slate-700 whitespace-pre-wrap py-2">{viewingMemo.memo}</p>
+            {viewingMemo.memo && (
+              <p className="text-base text-slate-700 whitespace-pre-wrap py-2">{viewingMemo.memo}</p>
+            )}
+            {viewingMemo.photo_url && (
+              <img
+                src={viewingMemo.photo_url}
+                alt="메모 첨부 사진"
+                className="w-full rounded-lg object-cover max-h-72"
+              />
+            )}
             <button
               onClick={() => setViewingMemo(null)}
               className="w-full rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 font-medium"
@@ -326,15 +336,20 @@ function EditLogModal({
   choreName,
   onClose,
   onSaved,
+  onPhotoChanged,
 }: {
   log: ChoreLog
   choreName: string
   onClose: () => void
   onSaved: () => void
+  onPhotoChanged: () => void
 }) {
   const showToast = useToast()
   const [memo, setMemo] = useState(log.memo ?? '')
+  const [photoUrl, setPhotoUrl] = useState(log.photo_url)
   const [saving, setSaving] = useState(false)
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   async function handleSaveMemo() {
     setSaving(true)
@@ -351,6 +366,24 @@ function EditLogModal({
     setSaving(false)
     showToast('메모를 삭제했어요')
     onSaved()
+  }
+
+  async function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingPhoto(true)
+    const url = await uploadLogPhoto(log.id, file)
+    setPhotoUrl(url)
+    setUploadingPhoto(false)
+    showToast('사진을 추가했어요')
+    onPhotoChanged()
+  }
+
+  async function handleDeletePhoto() {
+    await deleteLogPhoto(log.id)
+    setPhotoUrl(null)
+    showToast('사진을 삭제했어요')
+    onPhotoChanged()
   }
 
   return (
@@ -374,6 +407,39 @@ function EditLogModal({
             className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-[#FF922B]"
           />
         </div>
+
+        <div>
+          <label className="text-xs text-slate-500 mb-1 block">사진</label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={handlePhotoSelect}
+            className="hidden"
+          />
+          {photoUrl ? (
+            <div className="relative">
+              <img src={photoUrl} alt="첨부 사진" className="w-full rounded-lg object-cover max-h-48" />
+              <button
+                onClick={handleDeletePhoto}
+                className="absolute top-2 right-2 rounded-full bg-black/60 hover:bg-black/80 text-white text-xs px-2.5 py-1"
+              >
+                삭제
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingPhoto}
+              className="w-full rounded-lg border border-dashed border-slate-300 hover:border-[#FF922B] text-slate-400 hover:text-[#FF922B] disabled:opacity-50 py-2.5 font-medium text-sm"
+            >
+              {uploadingPhoto ? '업로드 중...' : '📷 사진 추가'}
+            </button>
+          )}
+        </div>
+
         <div className="flex gap-2">
           <button
             onClick={handleDeleteMemo}

@@ -21,6 +21,7 @@ export interface ChoreLog {
   done_by: string
   done_date: string
   memo: string | null
+  photo_url: string | null
   created_at: string
 }
 

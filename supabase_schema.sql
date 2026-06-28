@@ -58,8 +58,11 @@ create table if not exists chore_logs (
   done_by uuid not null references profiles(id),
   done_date date not null default current_date,
   memo text,
+  photo_url text,
   created_at timestamptz not null default now()
 );
+
+alter table chore_logs add column if not exists photo_url text;
 
 alter table chore_logs enable row level security;
 
@@ -67,6 +70,21 @@ drop policy if exists "chore_logs_all_authenticated" on chore_logs;
 create policy "chore_logs_all_authenticated" on chore_logs for all to authenticated using (true) with check (true);
 
 create index if not exists chore_logs_chore_id_idx on chore_logs(chore_id, done_date desc);
+
+-- ── 메모 사진 첨부용 스토리지 버킷 ─────────────────────────────────────────
+
+insert into storage.buckets (id, name, public)
+values ('chore-photos', 'chore-photos', true)
+on conflict (id) do nothing;
+
+drop policy if exists "chore_photos_select" on storage.objects;
+create policy "chore_photos_select" on storage.objects for select using (bucket_id = 'chore-photos');
+
+drop policy if exists "chore_photos_insert" on storage.objects;
+create policy "chore_photos_insert" on storage.objects for insert to authenticated with check (bucket_id = 'chore-photos');
+
+drop policy if exists "chore_photos_delete" on storage.objects;
+create policy "chore_photos_delete" on storage.objects for delete to authenticated using (bucket_id = 'chore-photos');
 
 -- ── 처리 전 메모 ──────────────────────────────────────────────────────
 -- 집안일을 처리하기 전에 상대방에게 남기는 한 줄 메모(예: "오늘 바빠서 못 했어, 내일 부탁해").
