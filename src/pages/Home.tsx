@@ -94,6 +94,8 @@ export default function Home() {
       chores.filter((c) => {
         if (c.last_done_date === selectedDate) return true
         if (!c.next_due_date) return false
+        // 1회성 작업은 완료 전까지 날짜 제한 없이 계속 표시한다.
+        if (c.period_days === null) return c.next_due_date <= selectedDate
         const showUntil = format(addDays(new Date(c.next_due_date), 1), 'yyyy-MM-dd')
         return c.next_due_date <= selectedDate && selectedDate <= showUntil
       }),

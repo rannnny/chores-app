@@ -127,9 +127,9 @@ export default function Stats() {
             return (
               <div key={p.id} className="border border-slate-200 rounded-lg p-3">
                 {count === 0 ? (
-                  <p className="text-sm font-medium text-slate-700 leading-relaxed">
+                  <p className="text-sm font-medium text-slate-700 leading-relaxed truncate">
                     {p.emoji ? `${p.emoji} ` : ''}
-                    {p.display_name}님의 도움을 기다리고 있어요!
+                    {p.display_name}님 차례예요!
                   </p>
                 ) : (
                   <>

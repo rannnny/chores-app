@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useToast } from '../components/Toast'
-import { archiveChore, createChore, getChoresWithStatus, todayStr, updateChore } from '../lib/data'
+import { archiveChore, createChore, getChoresWithStatus, updateChore } from '../lib/data'
 import type { ChoreWithStatus } from '../types/index'
 
 function PencilIcon() {
@@ -113,7 +113,7 @@ export default function Chores() {
               <CheckCircleIcon />
               <h3 className="text-sm font-semibold">이번에 할 일</h3>
             </div>
-            {renderCards(onceChores, '등록된 1회성 작업이 없어요.', (c) => c.due_date ?? '-')}
+            {renderCards(onceChores, '등록된 1회성 작업이 없어요.', () => '1회성')}
           </section>
         </>
       )}
@@ -177,7 +177,6 @@ function ChoreFormModal({
   const [recurring, setRecurring] = useState(chore ? chore.period_days !== null : true)
   const [periodMode, setPeriodMode] = useState(periodModeFor(chore?.period_days ?? 7))
   const [periodDays, setPeriodDays] = useState(chore?.period_days ? String(chore.period_days) : '7')
-  const [dueDate, setDueDate] = useState(chore?.due_date ?? todayStr())
   const [saving, setSaving] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -193,9 +192,9 @@ function ChoreFormModal({
     setSaving(true)
     const period = recurring ? Number(periodDays) || 1 : null
     if (chore) {
-      await updateChore(chore.id, name.trim(), period, recurring ? null : dueDate)
+      await updateChore(chore.id, name.trim(), period, null)
     } else {
-      await createChore(name.trim(), period, recurring ? null : dueDate)
+      await createChore(name.trim(), period, null)
     }
     setSaving(false)
     showToast(chore ? '수정했어요' : '추가했어요')
@@ -285,7 +284,7 @@ function ChoreFormModal({
           </button>
         </div>
 
-        {recurring ? (
+        {recurring && (
           <div>
             <label className="text-xs text-slate-500 mb-1 block">처리 주기</label>
             <div className="grid grid-cols-4 gap-2">
@@ -322,17 +321,6 @@ function ChoreFormModal({
                 className="w-full mt-2 rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-[#FF922B]"
               />
             )}
-          </div>
-        ) : (
-          <div>
-            <label className="text-xs text-slate-500 mb-1 block">할 일로 띄울 날짜</label>
-            <input
-              type="date"
-              required
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 outline-none transition focus:bg-white focus:border-[#FF922B] focus:ring-2 focus:ring-[#FF922B]/20"
-            />
           </div>
         )}
 
