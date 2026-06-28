@@ -204,11 +204,19 @@ function RecurringList({
           onPointerCancel={endDrag}
           onContextMenu={(e) => e.preventDefault()}
           style={{ touchAction: 'none' }}
-          className={`bg-white rounded-lg p-3 flex items-center justify-between gap-2 shadow-sm select-none transition ${
-            draggingId === chore.id ? 'opacity-60 scale-[1.02] shadow-lg' : ''
+          className={`bg-white rounded-lg p-3 flex items-center justify-between gap-2 select-none transition ${
+            draggingId === chore.id
+              ? 'border-2 border-[#FF922B] shadow-lg scale-[1.02]'
+              : 'border-2 border-transparent shadow-sm'
           }`}
         >
-          <p className="text-sm font-medium text-slate-700 truncate">{chore.name}</p>
+          <p
+            className={`text-sm font-medium truncate ${
+              draggingId === chore.id ? 'text-[#FF922B]' : 'text-slate-700'
+            }`}
+          >
+            {chore.name}
+          </p>
           <div className="flex items-center gap-2 shrink-0">
             <span className="rounded-full bg-slate-100 text-slate-500 text-xs px-2.5 py-1 font-medium">
               {tag(chore)}
@@ -293,7 +301,7 @@ function ChoreFormModal({
 
   if (confirmingDelete) {
     return (
-      <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0 z-40" onClick={onCancel}>
+      <div className="fixed inset-0 bg-black/30 flex items-center justify-center px-4 z-40" onClick={onCancel}>
         <div
           className="bg-white rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-xl"
           onClick={(e) => e.stopPropagation()}
@@ -323,7 +331,7 @@ function ChoreFormModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0 z-40" onClick={onCancel}>
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center px-4 z-40" onClick={onCancel}>
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-xl"
