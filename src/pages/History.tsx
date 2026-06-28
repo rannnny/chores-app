@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useToast } from '../components/Toast'
-import { deleteLog, getAllLogs, getAllProfiles, getChoresWithStatus, updateLogMemo } from '../lib/data'
-import type { Chore, ChoreLog, Profile } from '../types/index'
+import { deleteLog, getAllLogs, getChoresWithStatus, updateLogMemo } from '../lib/data'
+import type { Chore, ChoreLog } from '../types/index'
 
 export default function History() {
   const [logs, setLogs] = useState<ChoreLog[]>([])
   const [chores, setChores] = useState<Chore[]>([])
-  const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
   const [choreFilter, setChoreFilter] = useState('all')
   const [editingLog, setEditingLog] = useState<ChoreLog | null>(null)
@@ -15,10 +14,9 @@ export default function History() {
 
   async function load() {
     setLoading(true)
-    const [l, c, p] = await Promise.all([getAllLogs(), getChoresWithStatus(true), getAllProfiles()])
+    const [l, c] = await Promise.all([getAllLogs(), getChoresWithStatus(true)])
     setLogs(l)
     setChores(c)
-    setProfiles(p)
     setLoading(false)
   }
 
@@ -32,9 +30,8 @@ export default function History() {
   const choreKind = (id: string) => {
     const chore = chores.find((c) => c.id === id)
     if (!chore) return '-'
-    return chore.period_days ? `${chore.period_days}일마다` : '1회성'
+    return chore.period_days ? `${chore.period_days}일` : '1회'
   }
-  const profileName = (id: string) => profiles.find((p) => p.id === id)?.display_name ?? '알 수 없음'
 
   const filteredLogs = useMemo(
     () => (choreFilter === 'all' ? logs : logs.filter((l) => l.chore_id === choreFilter)),
@@ -114,11 +111,7 @@ export default function History() {
                 onContextMenu={(e) => e.preventDefault()}
                 className="active:bg-slate-50"
               >
-                <td className="py-3 px-3 text-center text-slate-400">
-                  {formatDate(log.done_date)}
-                  <br />
-                  {profileName(log.done_by)}
-                </td>
+                <td className="py-3 px-3 text-center text-slate-400">{formatDate(log.done_date)}</td>
                 <td className="py-3 px-3 text-center text-slate-400">{choreKind(log.chore_id)}</td>
                 <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">
                   {choreName(log.chore_id)}
