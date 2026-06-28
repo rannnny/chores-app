@@ -140,17 +140,19 @@ export default function History() {
         <YearMonthSelect value={startMonth} onChange={setStartMonth} years={years} />
         <span className="text-slate-400 text-sm shrink-0">~</span>
         <YearMonthSelect value={endMonth} onChange={setEndMonth} years={years} />
-        {(startMonth || endMonth) && (
-          <button
-            onClick={() => {
-              setStartMonth('')
-              setEndMonth('')
-            }}
-            className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 text-sm px-3 py-2.5 shrink-0"
-          >
-            전체
-          </button>
-        )}
+        <button
+          onClick={() => {
+            setStartMonth('')
+            setEndMonth('')
+          }}
+          className={`rounded-lg text-sm px-3 py-2.5 shrink-0 font-medium ${
+            !startMonth && !endMonth
+              ? 'bg-[#FF922B] text-white'
+              : 'bg-slate-100 hover:bg-slate-200 text-slate-500'
+          }`}
+        >
+          전체
+        </button>
       </div>
 
       {loading ? (
@@ -337,7 +339,7 @@ function YearMonthSelect({
         onChange={(e) => onChange(e.target.value ? `${e.target.value}-${m || '01'}` : '')}
         className={selectClass}
       >
-        <option value="">연도</option>
+        <option value="">전체</option>
         {years.map((yr) => (
           <option key={yr} value={yr}>
             {yr}년
@@ -350,7 +352,7 @@ function YearMonthSelect({
         disabled={!y}
         className={selectClass}
       >
-        <option value="">월</option>
+        <option value="">전체</option>
         {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map((mm) => (
           <option key={mm} value={mm}>
             {Number(mm)}월
