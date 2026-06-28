@@ -3,6 +3,24 @@ import { useToast } from '../components/Toast'
 import { deleteLog, getAllLogs, getChoresWithStatus, updateLogMemo } from '../lib/data'
 import type { Chore, ChoreLog } from '../types/index'
 
+function PencilIcon() {
+  return (
+    <svg
+      width={14}
+      height={14}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </svg>
+  )
+}
+
 export default function History() {
   const [logs, setLogs] = useState<ChoreLog[]>([])
   const [chores, setChores] = useState<Chore[]>([])
@@ -96,12 +114,15 @@ export default function History() {
                 {choreName(log.chore_id)}
               </p>
               <div className="flex items-center gap-2 shrink-0">
-                {log.memo && (
-                  <span className="text-base" title={log.memo}>
-                    📝
-                  </span>
-                )}
                 <p className="text-xs text-slate-400">{formatDate(log.done_date)}</p>
+                <button
+                  onClick={() => setEditingLog(log)}
+                  className="text-slate-400 hover:text-[#FF922B] p-1"
+                  aria-label="메모"
+                  title={log.memo ?? '메모 추가'}
+                >
+                  {log.memo ? '📝' : <PencilIcon />}
+                </button>
               </div>
             </li>
           ))}

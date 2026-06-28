@@ -74,7 +74,7 @@ export default function Chores() {
       <div className="space-y-2">
         {list.map((chore) => (
           <div key={chore.id} className="bg-white rounded-lg p-3 flex items-center justify-between gap-2 shadow-sm">
-            <p className="text-lg font-bold text-slate-800 truncate">{chore.name}</p>
+            <p className="text-sm font-medium text-slate-700 truncate">{chore.name}</p>
             <div className="flex items-center gap-2 shrink-0">
               <span className="rounded-full bg-slate-100 text-slate-500 text-xs px-2.5 py-1 font-medium">
                 {tag(chore)}
