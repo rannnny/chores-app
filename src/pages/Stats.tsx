@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { addDays, addMonths, endOfMonth, format, startOfMonth, subMonths } from 'date-fns'
+import { CheckCircleIcon, RepeatIcon } from '../components/icons'
 import { getAllLogs, getAllProfiles, getChoresWithStatus } from '../lib/data'
 import type { Chore, ChoreLog, Profile } from '../types/index'
 
@@ -153,7 +154,10 @@ export default function Stats() {
       )}
 
       <section className="bg-slate-50 rounded-2xl p-3">
-        <h3 className="text-sm font-semibold text-slate-500 mb-3">처리 현황 (반복)</h3>
+        <h3 className="text-sm font-semibold text-slate-500 mb-3 flex items-center gap-1.5">
+          <RepeatIcon />
+          처리 현황 (반복)
+        </h3>
         {recurringStats.length === 0 ? (
           <p className="text-sm text-slate-400 py-6 text-center">등록된 반복 작업이 없어요.</p>
         ) : (
@@ -164,7 +168,7 @@ export default function Stats() {
               <col className="w-[38%]" />
             </colgroup>
             <thead>
-              <tr className="bg-slate-50 text-center text-xs text-slate-400">
+              <tr className="bg-white text-center text-xs text-slate-400 divide-x divide-slate-200">
                 <th className="py-2 px-3 font-medium">집안일</th>
                 <th className="py-2 px-3 font-medium">주기</th>
                 <th className="py-2 px-3 font-medium">처리현황</th>
@@ -172,7 +176,7 @@ export default function Stats() {
             </thead>
             <tbody className="divide-y divide-slate-200">
               {recurringStats.map(({ chore, count, expected, onTrack, delayed }) => (
-                <tr key={chore.id}>
+                <tr key={chore.id} className="divide-x divide-slate-200">
                   <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
                   <td className="py-3 px-3 text-center text-slate-400">{chore.period_days}일</td>
                   <td className="py-3 px-3 text-center">
@@ -189,7 +193,10 @@ export default function Stats() {
       </section>
 
       <section className="bg-slate-50 rounded-2xl p-3">
-        <h3 className="text-sm font-semibold text-slate-500 mb-3">처리 현황 (1회성)</h3>
+        <h3 className="text-sm font-semibold text-slate-500 mb-3 flex items-center gap-1.5">
+          <CheckCircleIcon />
+          처리 현황 (1회성)
+        </h3>
         {onceStats.length === 0 ? (
           <p className="text-sm text-slate-400 py-6 text-center">등록된 1회성 작업이 없어요.</p>
         ) : (
@@ -199,14 +206,14 @@ export default function Stats() {
               <col className="w-[38%]" />
             </colgroup>
             <thead>
-              <tr className="bg-slate-50 text-center text-xs text-slate-400">
+              <tr className="bg-white text-center text-xs text-slate-400 divide-x divide-slate-200">
                 <th className="py-2 px-3 font-medium">집안일</th>
                 <th className="py-2 px-3 font-medium">처리현황</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
               {onceStats.map(({ chore, count }) => (
-                <tr key={chore.id}>
+                <tr key={chore.id} className="divide-x divide-slate-200">
                   <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
                   <td className="py-3 px-3 text-center">
                     <span className={`font-semibold ${count > 0 ? 'text-slate-900' : 'text-slate-400'}`}>
