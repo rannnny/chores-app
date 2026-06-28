@@ -1,7 +1,47 @@
 import { useEffect, useMemo, useState } from 'react'
-import { addDays, addMonths, format, getDaysInMonth, subMonths } from 'date-fns'
+import { addDays, addMonths, endOfMonth, format, startOfMonth, subMonths } from 'date-fns'
 import { getAllLogs, getAllProfiles, getChoresWithStatus } from '../lib/data'
 import type { Chore, ChoreLog, Profile } from '../types/index'
+
+// 그 달 안에 실제로 처리해야 했던(또는 해야 할) 횟수를 계산한다.
+// 마지막 처리일 + 주기를 계속 이어 붙여가며, 그 결과가 이번 달 안에 들어오는 횟수를 센다.
+function countExpectedInMonth(
+  chore: Chore,
+  choreLogsAsc: ChoreLog[],
+  monthStart: Date,
+  monthEnd: Date
+): number {
+  if (!chore.period_days) return 1
+  const period = chore.period_days
+  const inMonth = (d: Date) => d >= monthStart && d <= monthEnd
+
+  if (choreLogsAsc.length === 0) {
+    let count = 0
+    let cursor = new Date(chore.created_at)
+    while (cursor <= monthEnd) {
+      if (inMonth(cursor)) count++
+      cursor = addDays(cursor, period)
+    }
+    return count
+  }
+
+  let count = 0
+  const firstDate = new Date(choreLogsAsc[0].done_date)
+  if (inMonth(firstDate)) count++
+
+  for (let i = 1; i < choreLogsAsc.length; i++) {
+    const scheduled = addDays(new Date(choreLogsAsc[i - 1].done_date), period)
+    if (inMonth(scheduled)) count++
+  }
+
+  let cursor = addDays(new Date(choreLogsAsc[choreLogsAsc.length - 1].done_date), period)
+  while (cursor <= monthEnd) {
+    if (inMonth(cursor)) count++
+    cursor = addDays(cursor, period)
+  }
+
+  return count
+}
 
 export default function Stats() {
   const [logs, setLogs] = useState<ChoreLog[]>([])
@@ -32,18 +72,19 @@ export default function Stats() {
 
   const total = useMemo(() => [...counts.values()].reduce((a, b) => a + b, 0), [counts])
 
-  const daysInMonth = getDaysInMonth(month)
+  const monthStart = startOfMonth(month)
+  const monthEnd = endOfMonth(month)
 
   const choreStats = useMemo(() => {
     return chores.map((chore) => {
       const count = logs.filter((l) => l.chore_id === chore.id && l.done_date.startsWith(monthKey)).length
-      const expected = chore.period_days ? Math.max(1, Math.round(daysInMonth / chore.period_days)) : 1
+      const choreLogs = logs
+        .filter((l) => l.chore_id === chore.id)
+        .sort((a, b) => (a.done_date < b.done_date ? -1 : 1))
+      const expected = countExpectedInMonth(chore, choreLogs, monthStart, monthEnd)
 
       let delayed = 0
       if (chore.period_days) {
-        const choreLogs = logs
-          .filter((l) => l.chore_id === chore.id)
-          .sort((a, b) => (a.done_date < b.done_date ? -1 : 1))
         for (let i = 1; i < choreLogs.length; i++) {
           const cur = choreLogs[i]
           if (!cur.done_date.startsWith(monthKey)) continue
@@ -54,7 +95,7 @@ export default function Stats() {
 
       return { chore, count, expected, onTrack: count >= expected, delayed }
     })
-  }, [chores, logs, monthKey, daysInMonth])
+  }, [chores, logs, monthKey, monthStart, monthEnd])
 
   const recurringStats = choreStats.filter((s) => s.chore.period_days !== null)
   const onceStats = choreStats.filter((s) => s.chore.period_days === null)
