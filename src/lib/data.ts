@@ -134,6 +134,7 @@ export async function getAllLogs(): Promise<ChoreLog[]> {
     .from('chore_logs')
     .select('*')
     .order('done_date', { ascending: false })
+    .order('created_at', { ascending: false })
   if (error) throw error
   return data ?? []
 }
