@@ -3,24 +3,6 @@ import { useToast } from '../components/Toast'
 import { deleteLog, getAllLogs, getChoresWithStatus, updateLogMemo } from '../lib/data'
 import type { Chore, ChoreLog } from '../types/index'
 
-function PencilIcon() {
-  return (
-    <svg
-      width={14}
-      height={14}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-    </svg>
-  )
-}
-
 export default function History() {
   const [logs, setLogs] = useState<ChoreLog[]>([])
   const [chores, setChores] = useState<Chore[]>([])
@@ -111,19 +93,17 @@ export default function History() {
               className="flex items-center justify-between gap-3 py-2.5 active:bg-slate-50"
             >
               <p className="text-xs text-slate-400 shrink-0">{formatDate(log.done_date)}</p>
-              <div className="flex items-center gap-2 min-w-0 flex-1 justify-end">
-                <p className="text-base font-bold text-slate-900 truncate text-right">
-                  {choreName(log.chore_id)}
-                </p>
-                <button
-                  onClick={() => setEditingLog(log)}
-                  className="text-slate-400 hover:text-[#FF922B] p-1 shrink-0"
-                  aria-label="메모"
-                  title={log.memo ?? '메모 추가'}
-                >
-                  {log.memo ? '📝' : <PencilIcon />}
-                </button>
-              </div>
+              <p className="text-sm font-semibold text-slate-900 truncate min-w-0 flex-1">
+                {choreName(log.chore_id)}
+              </p>
+              <button
+                onClick={() => setEditingLog(log)}
+                className="text-xs text-slate-400 hover:text-[#FF922B] shrink-0 max-w-[88px] truncate"
+                aria-label="메모"
+                title={log.memo ?? '메모 추가'}
+              >
+                {log.memo || '📝'}
+              </button>
             </li>
           ))}
         </ul>

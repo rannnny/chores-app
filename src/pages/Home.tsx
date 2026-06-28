@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  addDays,
   addMonths,
   eachDayOfInterval,
   endOfMonth,
@@ -94,21 +93,23 @@ export default function Home() {
       chores.filter((c) => {
         if (c.last_done_date === selectedDate) return true
         if (!c.next_due_date) return false
-        // 1회성 작업은 완료 전까지 날짜 제한 없이 계속 표시한다.
-        if (c.period_days === null) return c.next_due_date <= selectedDate
-        const showUntil = format(addDays(new Date(c.next_due_date), 1), 'yyyy-MM-dd')
-        return c.next_due_date <= selectedDate && selectedDate <= showUntil
+        // 기한이 지나도 처리하기 전까지 계속 표시한다.
+        return c.next_due_date <= selectedDate
       }),
     [chores, selectedDate]
   )
 
   const dueDatesInMonth = useMemo(() => {
     const map = new Map<string, ChoreWithStatus[]>()
+    const add = (date: string | null, chore: ChoreWithStatus) => {
+      if (!date) return
+      const list = map.get(date) ?? []
+      list.push(chore)
+      map.set(date, list)
+    }
     for (const c of chores) {
-      if (!c.next_due_date) continue
-      const list = map.get(c.next_due_date) ?? []
-      list.push(c)
-      map.set(c.next_due_date, list)
+      add(c.next_due_date, c)
+      add(c.last_done_date, c)
     }
     return map
   }, [chores])
