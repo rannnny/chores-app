@@ -1,5 +1,4 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
 
 function TabIcon({ name }: { name: 'home' | 'chores' | 'history' | 'stats' | 'settings' }) {
   const common = {
@@ -73,14 +72,7 @@ const tabs = [
 export default function Layout() {
   return (
     <div className="h-dvh flex flex-col text-[#495057] bg-white">
-      <header className="flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top)+1rem)] pb-4">
-        <h1 className="text-base font-semibold text-slate-900 tracking-tight">집안일 공유</h1>
-        <button onClick={() => supabase.auth.signOut()} className="text-xs text-slate-400 hover:text-[#495057]">
-          로그아웃
-        </button>
-      </header>
-
-      <main className="flex-1 px-5 pb-24 overflow-y-auto" style={{ overscrollBehaviorY: 'contain' }}>
+      <main className="flex-1 px-5 pt-[calc(env(safe-area-inset-top)+1rem)] pb-24 overflow-y-auto" style={{ overscrollBehaviorY: 'contain' }}>
         <Outlet />
       </main>
 

@@ -125,7 +125,7 @@ export default function Stats() {
             const count = counts.get(p.id) ?? 0
             const pct = total > 0 ? Math.round((count / total) * 100) : 0
             return (
-              <div key={p.id} className="border border-slate-200 rounded-lg p-3">
+              <div key={p.id} className="border border-slate-100 rounded-lg p-3 shadow-sm">
                 {count === 0 ? (
                   <p className="text-sm font-medium text-slate-700 leading-relaxed truncate">
                     {p.emoji ? `${p.emoji} ` : ''}

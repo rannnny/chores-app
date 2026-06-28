@@ -144,6 +144,12 @@ export default function Settings() {
           </div>
         </AccordionSection>
       </div>
+
+      <div className="text-center">
+        <button onClick={() => supabase.auth.signOut()} className="text-sm text-slate-400 hover:text-slate-600">
+          로그아웃
+        </button>
+      </div>
     </div>
   )
 }

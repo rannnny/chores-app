@@ -13,6 +13,7 @@ export default function History() {
   const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
   const [startMonth, setStartMonth] = useState(currentMonth)
   const [endMonth, setEndMonth] = useState(currentMonth)
+  const [savedFilter, setSavedFilter] = useState({ start: currentMonth, end: currentMonth })
   const [editingLog, setEditingLog] = useState<ChoreLog | null>(null)
   const [viewingMemo, setViewingMemo] = useState<ChoreLog | null>(null)
   const longPressTimerRef = useRef<number | null>(null)
@@ -142,13 +143,19 @@ export default function History() {
         <YearMonthSelect value={endMonth} onChange={setEndMonth} years={years} />
         <button
           onClick={() => {
-            setStartMonth('')
-            setEndMonth('')
+            if (!startMonth && !endMonth) {
+              setStartMonth(savedFilter.start)
+              setEndMonth(savedFilter.end)
+            } else {
+              setSavedFilter({ start: startMonth, end: endMonth })
+              setStartMonth('')
+              setEndMonth('')
+            }
           }}
-          className={`rounded-lg text-sm px-3 py-2.5 shrink-0 font-medium ${
+          className={`rounded-lg border text-sm px-3 py-2.5 shrink-0 font-medium ${
             !startMonth && !endMonth
-              ? 'bg-[#FF922B] text-white'
-              : 'bg-slate-100 hover:bg-slate-200 text-slate-500'
+              ? 'border-slate-700 bg-slate-700 text-white'
+              : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-500'
           }`}
         >
           전체
