@@ -152,7 +152,7 @@ export default function Stats() {
         </div>
       )}
 
-      <section>
+      <section className="bg-slate-50 rounded-2xl p-3">
         <h3 className="text-sm font-semibold text-slate-500 mb-3">처리 현황 (반복)</h3>
         {recurringStats.length === 0 ? (
           <p className="text-sm text-slate-400 py-6 text-center">등록된 반복 작업이 없어요.</p>
@@ -188,7 +188,7 @@ export default function Stats() {
         )}
       </section>
 
-      <section>
+      <section className="bg-slate-50 rounded-2xl p-3">
         <h3 className="text-sm font-semibold text-slate-500 mb-3">처리 현황 (1회성)</h3>
         {onceStats.length === 0 ? (
           <p className="text-sm text-slate-400 py-6 text-center">등록된 1회성 작업이 없어요.</p>
