@@ -137,31 +137,28 @@ export default function History() {
         </svg>
       </div>
 
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <YearMonthSelect value={startMonth} onChange={setStartMonth} years={years} />
-          <span className="text-slate-400 text-sm shrink-0">~</span>
-          <YearMonthSelect value={endMonth} onChange={setEndMonth} years={years} />
-        </div>
-        <button
-          onClick={() => {
-            if (!startMonth && !endMonth) {
-              setStartMonth(savedFilter.start)
-              setEndMonth(savedFilter.end)
-            } else {
-              setSavedFilter({ start: startMonth, end: endMonth })
-              setStartMonth('')
-              setEndMonth('')
-            }
-          }}
-          className={`w-full rounded-lg border text-sm px-3 py-2.5 font-medium ${
-            !startMonth && !endMonth
-              ? 'border-slate-700 bg-slate-700 text-white'
-              : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-500'
-          }`}
-        >
+      <div className="flex items-center gap-2">
+        <YearMonthSelect value={startMonth} onChange={setStartMonth} years={years} />
+        <span className="text-slate-400 text-sm shrink-0">~</span>
+        <YearMonthSelect value={endMonth} onChange={setEndMonth} years={years} />
+        <label className="flex items-center gap-1 shrink-0 text-sm text-slate-500 select-none">
+          <input
+            type="checkbox"
+            checked={!startMonth && !endMonth}
+            onChange={(e) => {
+              if (e.target.checked) {
+                setSavedFilter({ start: startMonth, end: endMonth })
+                setStartMonth('')
+                setEndMonth('')
+              } else {
+                setStartMonth(savedFilter.start)
+                setEndMonth(savedFilter.end)
+              }
+            }}
+            className="w-4 h-4 accent-[#FF922B]"
+          />
           전체
-        </button>
+        </label>
       </div>
 
       {loading ? (
