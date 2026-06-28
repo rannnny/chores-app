@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useToast } from '../components/Toast'
+import { CheckCircleIcon, RepeatIcon } from '../components/icons'
 import { deleteLog, getAllLogs, getChoresWithStatus, updateLogMemo } from '../lib/data'
 import type { Chore, ChoreLog } from '../types/index'
 
@@ -31,7 +32,8 @@ export default function History() {
 
   const formatDate = (date: string) => date.slice(2).replace(/-/g, '.')
 
-  const choreName = (id: string) => chores.find((c) => c.id === id)?.name ?? '(삭제된 집안일)'
+  const choreById = (id: string) => chores.find((c) => c.id === id)
+  const choreName = (id: string) => choreById(id)?.name ?? '(삭제된 집안일)'
 
   const filteredLogs = useMemo(
     () =>
@@ -154,8 +156,11 @@ export default function History() {
               className="flex items-center justify-between gap-3 py-2.5 active:bg-slate-50"
             >
               <p className="text-xs text-slate-400 shrink-0">{formatDate(log.done_date)}</p>
-              <p className="text-sm font-semibold text-slate-900 truncate min-w-0 flex-1">
-                {choreName(log.chore_id)}
+              <p className="text-sm font-semibold text-slate-900 truncate min-w-0 flex-1 flex items-center gap-1.5">
+                <span className="text-slate-400 shrink-0">
+                  {choreById(log.chore_id)?.period_days != null ? <RepeatIcon /> : <CheckCircleIcon />}
+                </span>
+                <span className="truncate">{choreName(log.chore_id)}</span>
               </p>
               <button
                 onPointerDown={(e) => {
