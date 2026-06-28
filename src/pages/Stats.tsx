@@ -51,8 +51,9 @@ export default function Stats() {
   const [month, setMonth] = useState(new Date())
 
   useEffect(() => {
-    Promise.all([getAllLogs(), getAllProfiles(), getChoresWithStatus(true)]).then(([l, p, c]) => {
-      setLogs(l)
+    Promise.all([getAllLogs(), getAllProfiles(), getChoresWithStatus()]).then(([l, p, c]) => {
+      const activeChoreIds = new Set(c.map((chore) => chore.id))
+      setLogs(l.filter((log) => activeChoreIds.has(log.chore_id)))
       setProfiles(p)
       setChores(c)
       setLoading(false)
@@ -125,17 +126,26 @@ export default function Stats() {
             const pct = total > 0 ? Math.round((count / total) * 100) : 0
             return (
               <div key={p.id} className="border border-slate-200 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-sm font-medium text-slate-700 leading-relaxed truncate">
-                    {p.emoji ? `${p.emoji}(${p.display_name})` : p.display_name}
+                {count === 0 ? (
+                  <p className="text-sm font-medium text-slate-700 leading-relaxed">
+                    {p.emoji ? `${p.emoji} ` : ''}
+                    {p.display_name}님의 도움을 기다리고 있어요!
                   </p>
-                  <p className="text-sm text-slate-500 shrink-0">
-                    {count}건 ({pct}%)
-                  </p>
-                </div>
-                <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                  <div className="h-full bg-[#FF922B]" style={{ width: `${pct}%` }} />
-                </div>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="text-sm font-medium text-slate-700 leading-relaxed truncate">
+                        {p.emoji ? `${p.emoji}(${p.display_name})` : p.display_name}
+                      </p>
+                      <p className="text-sm text-slate-500 shrink-0">
+                        {count}건 ({pct}%)
+                      </p>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                      <div className="h-full bg-[#FF922B]" style={{ width: `${pct}%` }} />
+                    </div>
+                  </>
+                )}
               </div>
             )
           })}
@@ -143,7 +153,7 @@ export default function Stats() {
       )}
 
       <section>
-        <h3 className="text-lg font-bold text-slate-700 mb-3 leading-snug">처리 현황 (반복)</h3>
+        <h3 className="text-sm font-semibold text-slate-500 mb-3">처리 현황 (반복)</h3>
         {recurringStats.length === 0 ? (
           <p className="text-sm text-slate-400 py-6 text-center">등록된 반복 작업이 없어요.</p>
         ) : (
@@ -179,7 +189,7 @@ export default function Stats() {
       </section>
 
       <section>
-        <h3 className="text-lg font-bold text-slate-700 mb-3 leading-snug">처리 현황 (1회성)</h3>
+        <h3 className="text-sm font-semibold text-slate-500 mb-3">처리 현황 (1회성)</h3>
         {onceStats.length === 0 ? (
           <p className="text-sm text-slate-400 py-6 text-center">등록된 1회성 작업이 없어요.</p>
         ) : (

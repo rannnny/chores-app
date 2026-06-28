@@ -215,21 +215,21 @@ export default function Home() {
         {houseNote ? (
           <div
             title={profileName(houseNote.author)}
-            className="bg-amber-50 border border-amber-200 text-amber-700 text-xs rounded-lg px-3 py-2 flex items-center gap-2"
+            className="bg-[#FFF3E6] border border-[#FFD9A8] text-[#B5650F] text-xs rounded-lg px-3 py-2 flex items-center gap-2"
           >
             <p className="flex-1 truncate">📢 {houseNote.message}</p>
             <div className="flex gap-1 shrink-0">
               {houseNote.author === session?.user.id ? (
                 <button
                   onClick={startEditHouseNote}
-                  className="rounded-full bg-white/70 hover:bg-white text-amber-700 text-xs px-2.5 py-1 border border-amber-200"
+                  className="rounded-full bg-white/70 hover:bg-white text-[#B5650F] text-xs px-2.5 py-1 border border-[#FFD9A8]"
                 >
                   수정
                 </button>
               ) : (
                 <button
                   onClick={handleConfirmHouseNote}
-                  className="rounded-full bg-amber-400 hover:bg-amber-500 text-white text-xs px-2.5 py-1 font-bold"
+                  className="rounded-full bg-[#FF922B] hover:bg-[#E8830A] text-white text-xs px-2.5 py-1 font-bold"
                 >
                   확인
                 </button>
@@ -367,7 +367,10 @@ export default function Home() {
               const doneOnSelected = chore.last_done_date === selectedDate
               const overdue = !doneOnSelected && !!chore.next_due_date && chore.next_due_date < selectedDate
               return (
-                <div key={chore.id} className="border border-slate-200 rounded-lg p-2 space-y-0.5">
+                <div
+                  key={chore.id}
+                  className="bg-white border border-slate-100 rounded-lg p-2 space-y-0.5 shadow-sm"
+                >
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-sm font-medium text-slate-700 leading-relaxed truncate">{chore.name}</p>
                     <div className="flex items-center gap-1 shrink-0">

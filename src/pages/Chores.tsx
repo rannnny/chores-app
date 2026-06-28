@@ -3,6 +3,44 @@ import { useToast } from '../components/Toast'
 import { archiveChore, createChore, getChoresWithStatus, todayStr, updateChore } from '../lib/data'
 import type { ChoreWithStatus } from '../types/index'
 
+function PencilIcon() {
+  return (
+    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </svg>
+  )
+}
+
+function RepeatIcon() {
+  return (
+    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 4v5h5" />
+      <path d="M20 20v-5h-5" />
+      <path d="M5.5 9a7 7 0 0 1 12-3.5L20 7" />
+      <path d="M18.5 15a7 7 0 0 1-12 3.5L4 17" />
+    </svg>
+  )
+}
+
+function CheckCircleIcon() {
+  return (
+    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M8 12.5l2.5 2.5L16 9.5" />
+    </svg>
+  )
+}
+
+function PlusIcon() {
+  return (
+    <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  )
+}
+
 export default function Chores() {
   const showToast = useToast()
   const [chores, setChores] = useState<ChoreWithStatus[]>([])
@@ -28,80 +66,65 @@ export default function Chores() {
   const recurringChores = chores.filter((c) => c.period_days !== null)
   const onceChores = chores.filter((c) => c.period_days === null)
 
-  function renderTable(
-    list: ChoreWithStatus[],
-    emptyText: string,
-    middleLabel: string,
-    middleValue: (chore: ChoreWithStatus) => string
-  ) {
+  function renderCards(list: ChoreWithStatus[], emptyText: string, tag: (chore: ChoreWithStatus) => string) {
     if (list.length === 0) {
       return <p className="text-sm text-slate-400 py-6 text-center">{emptyText}</p>
     }
     return (
-      <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm">
-        <colgroup>
-          <col className="w-[10%]" />
-          <col className="w-[40%]" />
-          <col className="w-[30%]" />
-          <col className="w-[20%]" />
-        </colgroup>
-        <thead>
-          <tr className="bg-slate-50 text-center text-xs text-slate-400">
-            <th className="py-2 px-3 font-medium">No.</th>
-            <th className="py-2 px-3 font-medium">집안일</th>
-            <th className="py-2 px-3 font-medium">{middleLabel}</th>
-            <th className="py-2 px-3 font-medium">관리</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-200">
-          {list.map((chore, i) => (
-            <tr key={chore.id}>
-              <td className="py-3 px-3 text-center text-slate-400">{i + 1}</td>
-              <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">{chore.name}</td>
-              <td
+      <div className="space-y-2">
+        {list.map((chore) => (
+          <div key={chore.id} className="bg-white rounded-lg p-3 flex items-center justify-between gap-2 shadow-sm">
+            <p className="text-lg font-bold text-slate-800 truncate">{chore.name}</p>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="rounded-full bg-slate-100 text-slate-500 text-xs px-2.5 py-1 font-medium">
+                {tag(chore)}
+              </span>
+              <button
                 onClick={() => setEditing(chore)}
-                className="py-3 px-3 text-center text-slate-400 cursor-pointer hover:text-[#FF922B] hover:underline"
+                className="text-slate-400 hover:text-[#FF922B] p-1"
+                aria-label="수정"
               >
-                {middleValue(chore)}
-              </td>
-              <td className="py-3 px-3 text-center">
-                <button onClick={() => setEditing(chore)} className="text-slate-400 hover:text-[#FF922B]">
-                  수정
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                <PencilIcon />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     )
   }
 
   return (
-    <div className="space-y-6 pt-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug">집안일 목록</h2>
-        <button
-          onClick={() => setEditing('new')}
-          className="rounded-lg bg-[#FF922B] hover:bg-[#E8830A] text-white text-sm px-3 py-1.5 font-medium"
-        >
-          + 추가
-        </button>
-      </div>
+    <div className="space-y-4 pt-4 relative">
+      <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug">집안일 목록</h2>
 
       {loading ? (
         <p className="text-slate-400 text-center mt-10">불러오는 중...</p>
       ) : (
         <>
-          <section>
-            <h3 className="text-lg font-bold text-slate-700 mb-3 leading-snug">🔁 반복 작업</h3>
-            {renderTable(recurringChores, '등록된 반복 작업이 없어요.', '주기', (c) => `${c.period_days}일`)}
+          <section className="bg-slate-50 rounded-2xl p-3">
+            <div className="flex items-center gap-1.5 mb-2 px-1 text-slate-500">
+              <RepeatIcon />
+              <h3 className="text-sm font-semibold">꾸준히 반복되는 일</h3>
+            </div>
+            {renderCards(recurringChores, '등록된 반복 작업이 없어요.', (c) => `${c.period_days}일 주기`)}
           </section>
-          <section>
-            <h3 className="text-lg font-bold text-slate-700 mb-3 leading-snug">✅ 1회성 작업</h3>
-            {renderTable(onceChores, '등록된 1회성 작업이 없어요.', '예정일', (c) => c.due_date ?? '-')}
+          <section className="bg-slate-50 rounded-2xl p-3">
+            <div className="flex items-center gap-1.5 mb-2 px-1 text-slate-500">
+              <CheckCircleIcon />
+              <h3 className="text-sm font-semibold">이번에 할 일</h3>
+            </div>
+            {renderCards(onceChores, '등록된 1회성 작업이 없어요.', (c) => c.due_date ?? '-')}
           </section>
         </>
       )}
+
+      <button
+        onClick={() => setEditing('new')}
+        className="fixed bottom-24 right-5 z-30 w-14 h-14 rounded-full bg-[#FF922B] hover:bg-[#E8830A] text-white shadow-lg flex items-center justify-center"
+        aria-label="집안일 추가"
+      >
+        <PlusIcon />
+      </button>
 
       {editing && (
         <ChoreFormModal
@@ -195,7 +218,7 @@ function ChoreFormModal({
           onClick={(e) => e.stopPropagation()}
         >
           <h3 className="font-semibold text-slate-900 text-lg tracking-tight">삭제할까요?</h3>
-          <p className="text-sm text-slate-500">처리 이력은 남아있어요.</p>
+          <p className="text-sm text-slate-500">이 집안일의 처리 이력도 함께 사라져요.</p>
           <div className="flex gap-2">
             <button
               type="button"
@@ -237,7 +260,7 @@ function ChoreFormModal({
             value={name}
             placeholder="예: 화장실 청소"
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-[#FF922B]"
+            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 outline-none transition focus:bg-white focus:border-[#FF922B] focus:ring-2 focus:ring-[#FF922B]/20"
           />
         </div>
 
@@ -308,7 +331,7 @@ function ChoreFormModal({
               required
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-[#FF922B]"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 outline-none transition focus:bg-white focus:border-[#FF922B] focus:ring-2 focus:ring-[#FF922B]/20"
             />
           </div>
         )}

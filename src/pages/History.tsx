@@ -14,8 +14,9 @@ export default function History() {
 
   async function load() {
     setLoading(true)
-    const [l, c] = await Promise.all([getAllLogs(), getChoresWithStatus(true)])
-    setLogs(l)
+    const [l, c] = await Promise.all([getAllLogs(), getChoresWithStatus()])
+    const activeChoreIds = new Set(c.map((chore) => chore.id))
+    setLogs(l.filter((log) => activeChoreIds.has(log.chore_id)))
     setChores(c)
     setLoading(false)
   }
@@ -27,11 +28,6 @@ export default function History() {
   const formatDate = (date: string) => date.slice(2).replace(/-/g, '.')
 
   const choreName = (id: string) => chores.find((c) => c.id === id)?.name ?? '(삭제된 집안일)'
-  const choreKind = (id: string) => {
-    const chore = chores.find((c) => c.id === id)
-    if (!chore) return '-'
-    return chore.period_days ? `${chore.period_days}일` : '1회'
-  }
 
   const filteredLogs = useMemo(
     () => (choreFilter === 'all' ? logs : logs.filter((l) => l.chore_id === choreFilter)),
@@ -86,41 +82,30 @@ export default function History() {
       ) : filteredLogs.length === 0 ? (
         <p className="text-sm text-slate-400 py-10 text-center">처리 기록이 없어요.</p>
       ) : (
-        <table className="w-full table-fixed border border-slate-200 rounded-lg overflow-hidden text-sm select-none">
-          <colgroup>
-            <col className="w-[24%]" />
-            <col className="w-[18%]" />
-            <col className="w-[46%]" />
-            <col className="w-[12%]" />
-          </colgroup>
-          <thead>
-            <tr className="bg-slate-50 text-center text-xs text-slate-400">
-              <th className="py-2 px-3 font-medium">날짜</th>
-              <th className="py-2 px-3 font-medium">주기</th>
-              <th className="py-2 px-3 font-medium">집안일</th>
-              <th className="py-2 px-3 font-medium">메모</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200">
-            {filteredLogs.map((log) => (
-              <tr
-                key={log.id}
-                onPointerDown={() => handlePressStart(log)}
-                onPointerUp={handlePressEnd}
-                onPointerLeave={handlePressEnd}
-                onContextMenu={(e) => e.preventDefault()}
-                className="active:bg-slate-50"
-              >
-                <td className="py-3 px-3 text-center text-slate-400">{formatDate(log.done_date)}</td>
-                <td className="py-3 px-3 text-center text-slate-400">{choreKind(log.chore_id)}</td>
-                <td className="py-3 px-3 text-center font-medium text-slate-700 truncate">
-                  {choreName(log.chore_id)}
-                </td>
-                <td className="py-3 px-3 text-center text-slate-500">{log.memo ? '📝' : ''}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <ul className="divide-y divide-slate-100 select-none">
+          {filteredLogs.map((log) => (
+            <li
+              key={log.id}
+              onPointerDown={() => handlePressStart(log)}
+              onPointerUp={handlePressEnd}
+              onPointerLeave={handlePressEnd}
+              onContextMenu={(e) => e.preventDefault()}
+              className="flex items-center justify-between gap-3 py-2.5 active:bg-slate-50"
+            >
+              <p className="text-base font-bold text-slate-900 truncate min-w-0 flex-1">
+                {choreName(log.chore_id)}
+              </p>
+              <div className="flex items-center gap-2 shrink-0">
+                {log.memo && (
+                  <span className="text-base" title={log.memo}>
+                    📝
+                  </span>
+                )}
+                <p className="text-xs text-slate-400">{formatDate(log.done_date)}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
 
       {editingLog && (

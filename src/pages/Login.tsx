@@ -41,7 +41,7 @@ export default function Login() {
     <div className="min-h-dvh flex items-start justify-center px-5 pt-24 overflow-y-auto bg-white">
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-5">
         <div className="space-y-1">
-          <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">집안일 공유</h1>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">집안일 공유</h1>
           <p className="text-sm text-slate-400">{mode === 'signin' ? '로그인' : '계정 만들기'}</p>
         </div>
 

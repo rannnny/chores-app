@@ -20,7 +20,7 @@ function AccordionSection({
       <button
         type="button"
         onClick={onToggle}
-        className="w-full flex items-center justify-between text-base font-semibold text-slate-900"
+        className="w-full flex items-center justify-between text-base font-bold text-slate-900"
       >
         <span>{label}</span>
         <span className={`text-slate-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}>⌄</span>
@@ -44,31 +44,21 @@ export default function Settings() {
   const showToast = useToast()
   const [displayName, setDisplayName] = useState(profile?.display_name ?? '')
   const [emoji, setEmoji] = useState(profile?.emoji ?? '')
-  const [savingName, setSavingName] = useState(false)
-  const [savingEmoji, setSavingEmoji] = useState(false)
+  const [savingProfile, setSavingProfile] = useState(false)
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [savingPassword, setSavingPassword] = useState(false)
   const [passwordError, setPasswordError] = useState<string | null>(null)
   const [passwordOpen, setPasswordOpen] = useState(false)
   const [nicknameOpen, setNicknameOpen] = useState(false)
-  const [emojiOpen, setEmojiOpen] = useState(false)
 
-  async function handleSaveName() {
+  async function handleSaveProfile() {
     if (!session || !displayName.trim()) return
-    setSavingName(true)
+    setSavingProfile(true)
     await updateMyDisplayName(session.user.id, displayName.trim())
+    if (emoji.trim()) await updateMyEmoji(session.user.id, emoji.trim())
     await refreshProfile()
-    setSavingName(false)
-    showToast('저장했어요')
-  }
-
-  async function handleSaveEmoji() {
-    if (!session || !emoji.trim()) return
-    setSavingEmoji(true)
-    await updateMyEmoji(session.user.id, emoji.trim())
-    await refreshProfile()
-    setSavingEmoji(false)
+    setSavingProfile(false)
     showToast('저장했어요')
   }
 
@@ -96,11 +86,18 @@ export default function Settings() {
 
   return (
     <div className="space-y-12 pt-4 pb-10">
-      <h2 className="text-[28px] font-bold text-slate-900 tracking-tight leading-snug">설정</h2>
+      <h2 className="text-2xl font-bold text-slate-900 tracking-tight leading-snug">설정</h2>
 
       <div className="space-y-8">
         <AccordionSection label="닉네임" open={nicknameOpen} onToggle={() => setNicknameOpen((o) => !o)}>
           <div className="flex gap-2">
+            <input
+              type="text"
+              value={emoji}
+              onChange={(e) => setEmoji(e.target.value)}
+              placeholder="🙂"
+              className="w-14 shrink-0 rounded-lg border border-slate-200 px-2 py-2.5 text-xl text-center outline-none focus:border-[#FF922B]"
+            />
             <input
               type="text"
               value={displayName}
@@ -108,22 +105,11 @@ export default function Settings() {
               placeholder="닉네임 입력"
               className="flex-1 rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-[#FF922B]"
             />
-            <button disabled={savingName || !displayName.trim()} onClick={handleSaveName} className={ghostButton}>
-              저장
-            </button>
-          </div>
-        </AccordionSection>
-
-        <AccordionSection label="이모지" open={emojiOpen} onToggle={() => setEmojiOpen((o) => !o)}>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={emoji}
-              onChange={(e) => setEmoji(e.target.value)}
-              placeholder="이모지"
-              className="flex-1 rounded-lg border border-slate-200 px-3 py-2.5 text-xl text-center outline-none focus:border-[#FF922B]"
-            />
-            <button disabled={savingEmoji || !emoji.trim()} onClick={handleSaveEmoji} className={ghostButton}>
+            <button
+              disabled={savingProfile || !displayName.trim()}
+              onClick={handleSaveProfile}
+              className={ghostButton}
+            >
               저장
             </button>
           </div>
