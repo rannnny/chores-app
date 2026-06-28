@@ -36,7 +36,7 @@ export default function History() {
   const filteredLogs = useMemo(
     () =>
       logs.filter(
-        (l) => (choreFilter === 'all' || l.chore_id === choreFilter) && (!dateFilter || l.done_date === dateFilter)
+        (l) => (choreFilter === 'all' || l.chore_id === choreFilter) && (!dateFilter || l.done_date.startsWith(dateFilter))
       ),
     [logs, choreFilter, dateFilter]
   )
@@ -123,7 +123,7 @@ export default function History() {
 
       <div className="flex gap-2">
         <input
-          type="date"
+          type="month"
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
           className="flex-1 rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-[#FF922B] bg-white text-sm text-slate-900"
@@ -197,7 +197,7 @@ export default function History() {
 
       {viewingMemo && (
         <div
-          className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0 z-40"
+          className="fixed inset-0 bg-black/30 flex items-center justify-center px-4 z-40"
           onClick={() => setViewingMemo(null)}
         >
           <div

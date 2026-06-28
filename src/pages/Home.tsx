@@ -16,6 +16,7 @@ import { y2018, y2019, y2020, y2021, y2022, y2023, y2024, y2025, y2026 } from '@
 import KoreanLunarCalendar from 'korean-lunar-calendar'
 import { useAuth } from '../lib/AuthContext'
 import { useToast } from '../components/Toast'
+import { CheckCircleIcon, RepeatIcon } from '../components/icons'
 import {
   acknowledgeHouseNote,
   clearHouseNote,
@@ -336,15 +337,16 @@ export default function Home() {
                       } ${isSelected && !isToday(day) ? 'ring-1 ring-[#FF922B]' : ''}`}
                     >
                       <span>{format(day, 'd')}</span>
-                      {dueChores.length > 0 ? (
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
-                            isPast && !isSameDay(day, new Date()) ? 'bg-rose-400' : 'bg-amber-400'
-                          } ${isToday(day) ? '!bg-white' : ''}`}
-                        />
-                      ) : (
-                        isFullMoonDay(day) && <span className="text-[8px] leading-none mt-0.5">🌕</span>
-                      )}
+                      <span className="flex items-center gap-0.5 mt-0.5 h-1.5">
+                        {dueChores.length > 0 && (
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              isPast && !isSameDay(day, new Date()) ? 'bg-rose-400' : 'bg-amber-400'
+                            } ${isToday(day) ? '!bg-white' : ''}`}
+                          />
+                        )}
+                        {isFullMoonDay(day) && <span className="text-[8px] leading-none">🌕</span>}
+                      </span>
                     </button>
                   )
                 })}
@@ -375,7 +377,12 @@ export default function Home() {
                   className="bg-white border border-slate-100 rounded-lg p-2 space-y-0.5 shadow-sm"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-medium text-slate-700 leading-relaxed truncate">{chore.name}</p>
+                    <p className="text-sm font-medium text-slate-700 leading-relaxed truncate flex items-center gap-1.5 min-w-0">
+                      <span className="text-slate-400 shrink-0">
+                        {chore.period_days !== null ? <RepeatIcon /> : <CheckCircleIcon />}
+                      </span>
+                      <span className="truncate">{chore.name}</span>
+                    </p>
                     <div className="flex items-center gap-1 shrink-0">
                       {doneOnSelected && <span className="text-sm">{profileEmoji(chore.last_done_by)}</span>}
                       <button
