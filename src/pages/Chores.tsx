@@ -93,7 +93,7 @@ export default function Chores() {
 
       <button
         onClick={() => setEditing('new')}
-        className="fixed bottom-24 right-5 z-30 w-14 h-14 rounded-full bg-[#FF922B] hover:bg-[#E8830A] text-white shadow-lg flex items-center justify-center"
+        className="fixed bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] right-5 z-30 w-14 h-14 rounded-full bg-[#FF922B] hover:bg-[#E8830A] text-white shadow-lg flex items-center justify-center"
         aria-label="집안일 추가"
       >
         <PlusIcon />

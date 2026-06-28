@@ -167,7 +167,13 @@ export default function History() {
       ) : filteredLogs.length === 0 ? (
         <p className="text-sm text-slate-400 py-10 text-center">처리 기록이 없어요.</p>
       ) : (
-        <ul className="divide-y divide-slate-100 select-none">
+        <>
+          <div className="flex items-center justify-between gap-3 px-0.5 pb-1 text-xs text-slate-400">
+            <span className="shrink-0 w-14 text-center">처리날짜</span>
+            <span className="flex-1">집안일</span>
+            <span className="shrink-0 max-w-[140px]">메모</span>
+          </div>
+          <ul className="divide-y divide-slate-100 select-none">
           {filteredLogs.map((log) => (
             <li
               key={log.id}
@@ -207,7 +213,8 @@ export default function History() {
               </button>
             </li>
           ))}
-        </ul>
+          </ul>
+        </>
       )}
 
       {editingLog && (
@@ -335,37 +342,24 @@ function YearMonthSelect({
   onChange: (value: string) => void
   years: number[]
 }) {
-  const [y, m] = value ? value.split('-') : ['', '']
-  const selectClass =
-    "flex-1 rounded-lg border border-slate-200 px-2 py-2.5 outline-none focus:border-[#FF922B] bg-white text-sm text-slate-900 appearance-none text-center"
+  const months = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'))
 
   return (
-    <div className="flex gap-1 flex-1">
-      <select
-        value={y}
-        onChange={(e) => onChange(e.target.value ? `${e.target.value}-${m || '01'}` : '')}
-        className={selectClass}
-      >
-        <option value="">전체</option>
-        {years.map((yr) => (
-          <option key={yr} value={yr}>
-            {yr}년
-          </option>
-        ))}
-      </select>
-      <select
-        value={m}
-        onChange={(e) => onChange(`${y || new Date().getFullYear()}-${e.target.value}`)}
-        disabled={!y}
-        className={selectClass}
-      >
-        <option value="">전체</option>
-        {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map((mm) => (
-          <option key={mm} value={mm}>
-            {Number(mm)}월
-          </option>
-        ))}
-      </select>
-    </div>
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="flex-1 min-w-0 rounded-lg border border-slate-200 px-1 py-2.5 outline-none focus:border-[#FF922B] bg-white text-sm text-slate-900 appearance-none text-center"
+    >
+      <option value="">전체</option>
+      {years.map((yr) => (
+        <optgroup key={yr} label={`${yr}년`}>
+          {months.map((mm) => (
+            <option key={`${yr}-${mm}`} value={`${yr}-${mm}`}>
+              {yr}년 {Number(mm)}월
+            </option>
+          ))}
+        </optgroup>
+      ))}
+    </select>
   )
 }

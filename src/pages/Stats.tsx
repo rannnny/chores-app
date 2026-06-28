@@ -168,10 +168,16 @@ export default function Stats() {
               <col className="w-[32%]" />
             </colgroup>
             <thead>
-              <tr className="bg-white text-center text-xs text-slate-400 divide-x divide-slate-200">
-                <th className="py-2 px-3 font-medium">집안일</th>
-                <th className="py-2 px-3 font-medium">주기</th>
-                <th className="py-2 px-3 font-medium">처리현황</th>
+              <tr className="text-center text-xs text-slate-400 divide-x divide-slate-200">
+                <th className="py-2 px-3 font-medium">
+                  <span className="inline-block rounded-full bg-slate-100 px-2.5 py-1">집안일</span>
+                </th>
+                <th className="py-2 px-3 font-medium">
+                  <span className="inline-block rounded-full bg-slate-100 px-2.5 py-1">주기</span>
+                </th>
+                <th className="py-2 px-3 font-medium">
+                  <span className="inline-block rounded-full bg-slate-100 px-2.5 py-1">처리현황</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -206,9 +212,13 @@ export default function Stats() {
               <col className="w-[32%]" />
             </colgroup>
             <thead>
-              <tr className="bg-white text-center text-xs text-slate-400 divide-x divide-slate-200">
-                <th className="py-2 px-3 font-medium">집안일</th>
-                <th className="py-2 px-3 font-medium">처리현황</th>
+              <tr className="text-center text-xs text-slate-400 divide-x divide-slate-200">
+                <th className="py-2 px-3 font-medium">
+                  <span className="inline-block rounded-full bg-slate-100 px-2.5 py-1">집안일</span>
+                </th>
+                <th className="py-2 px-3 font-medium">
+                  <span className="inline-block rounded-full bg-slate-100 px-2.5 py-1">처리현황</span>
+                </th>
               </tr>
             </thead>
             <tbody>
