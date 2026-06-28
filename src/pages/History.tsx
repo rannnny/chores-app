@@ -60,11 +60,24 @@ export default function History() {
           className="w-full appearance-none rounded-lg border border-slate-200 pl-3 pr-9 py-2.5 outline-none focus:border-[#FF922B] bg-white text-sm text-slate-900"
         >
           <option value="all">전체 집안일</option>
-          {chores.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
+          <optgroup label="🔁 반복 작업">
+            {chores
+              .filter((c) => c.period_days !== null)
+              .map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+          </optgroup>
+          <optgroup label="✅ 1회성 작업">
+            {chores
+              .filter((c) => c.period_days === null)
+              .map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+          </optgroup>
         </select>
         <svg
           className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
