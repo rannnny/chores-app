@@ -100,13 +100,14 @@ export default function Home() {
     [chores, selectedDate]
   )
 
-  // 완료 전까지는 기한일 이후 모든 날짜에 표시한다(오늘 할 일 목록과 동일한 기준).
+  // 예정일이 미래면 그 날짜에, 기한이 지났거나 오늘이면 항상 "오늘"에만 표시한다(과거 기한일에는 안 남고 매일 오늘로 옮겨간다).
   function dueChoresOnDay(dayKey: string): ChoreWithStatus[] {
-    return chores.filter(
-      (c) =>
-        c.last_done_date === dayKey ||
-        (!!c.next_due_date && c.next_due_date <= dayKey && dayKey <= today)
-    )
+    return chores.filter((c) => {
+      if (c.last_done_date === dayKey) return true
+      if (!c.next_due_date) return false
+      if (c.next_due_date > today) return c.next_due_date === dayKey
+      return dayKey === today
+    })
   }
 
   const monthStart = startOfMonth(month)
