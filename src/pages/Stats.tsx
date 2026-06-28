@@ -181,7 +181,7 @@ export default function Stats() {
                   <td className="py-3 px-3 text-center text-slate-400">{chore.period_days}일</td>
                   <td className="py-3 px-3 text-center">
                     <span className={`font-semibold ${onTrack ? 'text-slate-900' : 'text-rose-500'}`}>
-                      {count}/{expected}회 {onTrack ? '✅' : '⚠️'}
+                      {count}/{expected} {onTrack ? '✅' : '⚠️'}
                     </span>
                     {delayed > 0 && <p className="text-xs text-amber-500">지연 {delayed}회</p>}
                   </td>
