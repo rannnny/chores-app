@@ -24,13 +24,6 @@ export interface ChoreLog {
   created_at: string
 }
 
-export interface ChoreNote {
-  chore_id: string
-  author: string
-  message: string
-  updated_at: string
-}
-
 export interface HouseNote {
   id: number
   author: string
