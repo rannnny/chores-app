@@ -251,7 +251,7 @@ export default function Home() {
 
       {editingHouseNote && (
         <div
-          className="fixed inset-0 bg-black/30 flex items-center justify-center px-4 z-40"
+          className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0 z-40"
           onClick={() => setEditingHouseNote(false)}
         >
           <div
@@ -417,7 +417,7 @@ export default function Home() {
       </div>
 
       {pickerOpen && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center px-4 z-40" onClick={closePicker}>
+        <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0 z-40" onClick={closePicker}>
           <div
             className="bg-white rounded-2xl p-5 w-full max-w-sm space-y-3 shadow-xl max-h-[70vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
@@ -517,7 +517,7 @@ function EditCompleteModal({
   const [memo, setMemo] = useState('')
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center px-4 z-40" onClick={onCancel}>
+    <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0 z-40" onClick={onCancel}>
       <div
         className="bg-white rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-xl"
         onClick={(e) => e.stopPropagation()}

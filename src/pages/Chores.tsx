@@ -211,7 +211,7 @@ function ChoreFormModal({
 
   if (confirmingDelete) {
     return (
-      <div className="fixed inset-0 bg-black/30 flex items-center justify-center px-4 z-40" onClick={onCancel}>
+      <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0 z-40" onClick={onCancel}>
         <div
           className="bg-white rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-xl"
           onClick={(e) => e.stopPropagation()}
@@ -241,7 +241,7 @@ function ChoreFormModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center px-4 z-40" onClick={onCancel}>
+    <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0 z-40" onClick={onCancel}>
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-xl"

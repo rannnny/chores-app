@@ -8,9 +8,13 @@ export default function History() {
   const [chores, setChores] = useState<Chore[]>([])
   const [loading, setLoading] = useState(true)
   const [choreFilter, setChoreFilter] = useState('all')
+  const [dateFilter, setDateFilter] = useState('')
   const [editingLog, setEditingLog] = useState<ChoreLog | null>(null)
+  const [viewingMemo, setViewingMemo] = useState<ChoreLog | null>(null)
   const longPressTimerRef = useRef<number | null>(null)
   const longPressFiredRef = useRef(false)
+  const memoPressTimerRef = useRef<number | null>(null)
+  const memoLongPressFiredRef = useRef(false)
 
   async function load() {
     setLoading(true)
@@ -30,8 +34,11 @@ export default function History() {
   const choreName = (id: string) => chores.find((c) => c.id === id)?.name ?? '(삭제된 집안일)'
 
   const filteredLogs = useMemo(
-    () => (choreFilter === 'all' ? logs : logs.filter((l) => l.chore_id === choreFilter)),
-    [logs, choreFilter]
+    () =>
+      logs.filter(
+        (l) => (choreFilter === 'all' || l.chore_id === choreFilter) && (!dateFilter || l.done_date === dateFilter)
+      ),
+    [logs, choreFilter, dateFilter]
   )
 
   function handlePressStart(log: ChoreLog) {
@@ -47,6 +54,30 @@ export default function History() {
       clearTimeout(longPressTimerRef.current)
       longPressTimerRef.current = null
     }
+  }
+
+  function handleMemoPressStart(log: ChoreLog) {
+    memoLongPressFiredRef.current = false
+    memoPressTimerRef.current = window.setTimeout(() => {
+      memoLongPressFiredRef.current = true
+      setEditingLog(log)
+    }, 450)
+  }
+
+  function handleMemoPressEnd() {
+    if (memoPressTimerRef.current) {
+      clearTimeout(memoPressTimerRef.current)
+      memoPressTimerRef.current = null
+    }
+  }
+
+  function handleMemoClick(log: ChoreLog) {
+    if (memoLongPressFiredRef.current) {
+      memoLongPressFiredRef.current = false
+      return
+    }
+    if (log.memo) setViewingMemo(log)
+    else setEditingLog(log)
   }
 
   return (
@@ -90,6 +121,23 @@ export default function History() {
         </svg>
       </div>
 
+      <div className="flex gap-2">
+        <input
+          type="date"
+          value={dateFilter}
+          onChange={(e) => setDateFilter(e.target.value)}
+          className="flex-1 rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-[#FF922B] bg-white text-sm text-slate-900"
+        />
+        {dateFilter && (
+          <button
+            onClick={() => setDateFilter('')}
+            className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 text-sm px-3 shrink-0"
+          >
+            전체
+          </button>
+        )}
+      </div>
+
       {loading ? (
         <p className="text-slate-400 text-center mt-10">불러오는 중...</p>
       ) : filteredLogs.length === 0 ? (
@@ -110,8 +158,21 @@ export default function History() {
                 {choreName(log.chore_id)}
               </p>
               <button
-                onClick={() => setEditingLog(log)}
-                className="text-xs text-slate-400 hover:text-[#FF922B] shrink-0 max-w-[140px] truncate"
+                onPointerDown={(e) => {
+                  e.stopPropagation()
+                  handleMemoPressStart(log)
+                }}
+                onPointerUp={(e) => {
+                  e.stopPropagation()
+                  handleMemoPressEnd()
+                }}
+                onPointerLeave={handleMemoPressEnd}
+                onContextMenu={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleMemoClick(log)
+                }}
+                className="text-xs text-slate-400 hover:text-[#FF922B] shrink-0 max-w-[140px] truncate select-none"
                 aria-label="메모"
                 title={log.memo ?? '메모 추가'}
               >
@@ -132,6 +193,30 @@ export default function History() {
             load()
           }}
         />
+      )}
+
+      {viewingMemo && (
+        <div
+          className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0 z-40"
+          onClick={() => setViewingMemo(null)}
+        >
+          <div
+            className="bg-white rounded-2xl p-5 w-full max-w-sm space-y-2 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-semibold text-slate-900 text-lg tracking-tight">
+              {choreName(viewingMemo.chore_id)}
+            </h3>
+            <p className="text-xs text-slate-400">{formatDate(viewingMemo.done_date)}</p>
+            <p className="text-base text-slate-700 whitespace-pre-wrap py-2">{viewingMemo.memo}</p>
+            <button
+              onClick={() => setViewingMemo(null)}
+              className="w-full rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 py-2.5 font-medium"
+            >
+              닫기
+            </button>
+          </div>
+        </div>
       )}
     </div>
   )
@@ -168,7 +253,7 @@ function EditLogModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center px-4 z-40" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center px-4 pb-6 sm:pb-0 z-40" onClick={onClose}>
       <div
         className="bg-white rounded-2xl p-5 w-full max-w-sm space-y-4 shadow-xl"
         onClick={(e) => e.stopPropagation()}
