@@ -9,7 +9,8 @@ export default function History() {
   const [chores, setChores] = useState<Chore[]>([])
   const [loading, setLoading] = useState(true)
   const [choreFilter, setChoreFilter] = useState('all')
-  const [dateFilter, setDateFilter] = useState('')
+  const [startMonth, setStartMonth] = useState('')
+  const [endMonth, setEndMonth] = useState('')
   const [editingLog, setEditingLog] = useState<ChoreLog | null>(null)
   const [viewingMemo, setViewingMemo] = useState<ChoreLog | null>(null)
   const longPressTimerRef = useRef<number | null>(null)
@@ -35,12 +36,22 @@ export default function History() {
   const choreById = (id: string) => chores.find((c) => c.id === id)
   const choreName = (id: string) => choreById(id)?.name ?? '(삭제된 집안일)'
 
+  const years = useMemo(() => {
+    const set = new Set<number>([new Date().getFullYear()])
+    for (const l of logs) set.add(Number(l.done_date.slice(0, 4)))
+    return Array.from(set).sort((a, b) => b - a)
+  }, [logs])
+
   const filteredLogs = useMemo(
     () =>
-      logs.filter(
-        (l) => (choreFilter === 'all' || l.chore_id === choreFilter) && (!dateFilter || l.done_date.startsWith(dateFilter))
-      ),
-    [logs, choreFilter, dateFilter]
+      logs.filter((l) => {
+        if (choreFilter !== 'all' && l.chore_id !== choreFilter) return false
+        const month = l.done_date.slice(0, 7)
+        if (startMonth && month < startMonth) return false
+        if (endMonth && month > endMonth) return false
+        return true
+      }),
+    [logs, choreFilter, startMonth, endMonth]
   )
 
   function handlePressStart(log: ChoreLog) {
@@ -123,17 +134,17 @@ export default function History() {
         </svg>
       </div>
 
-      <div className="flex gap-2">
-        <input
-          type="month"
-          value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
-          className="flex-1 rounded-lg border border-slate-200 px-3 py-2.5 outline-none focus:border-[#FF922B] bg-white text-sm text-slate-900"
-        />
-        {dateFilter && (
+      <div className="flex items-center gap-2">
+        <YearMonthSelect value={startMonth} onChange={setStartMonth} years={years} />
+        <span className="text-slate-400 text-sm shrink-0">~</span>
+        <YearMonthSelect value={endMonth} onChange={setEndMonth} years={years} />
+        {(startMonth || endMonth) && (
           <button
-            onClick={() => setDateFilter('')}
-            className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 text-sm px-3 shrink-0"
+            onClick={() => {
+              setStartMonth('')
+              setEndMonth('')
+            }}
+            className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 text-sm px-3 py-2.5 shrink-0"
           >
             전체
           </button>
@@ -300,6 +311,50 @@ function EditLogModal({
           처리 취소
         </button>
       </div>
+    </div>
+  )
+}
+
+function YearMonthSelect({
+  value,
+  onChange,
+  years,
+}: {
+  value: string
+  onChange: (value: string) => void
+  years: number[]
+}) {
+  const [y, m] = value ? value.split('-') : ['', '']
+  const selectClass =
+    "flex-1 rounded-lg border border-slate-200 px-2 py-2.5 outline-none focus:border-[#FF922B] bg-white text-sm text-slate-900 appearance-none"
+
+  return (
+    <div className="flex gap-1 flex-1">
+      <select
+        value={y}
+        onChange={(e) => onChange(e.target.value ? `${e.target.value}-${m || '01'}` : '')}
+        className={selectClass}
+      >
+        <option value="">연도</option>
+        {years.map((yr) => (
+          <option key={yr} value={yr}>
+            {yr}년
+          </option>
+        ))}
+      </select>
+      <select
+        value={m}
+        onChange={(e) => onChange(`${y || new Date().getFullYear()}-${e.target.value}`)}
+        disabled={!y}
+        className={selectClass}
+      >
+        <option value="">월</option>
+        {Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0')).map((mm) => (
+          <option key={mm} value={mm}>
+            {Number(mm)}월
+          </option>
+        ))}
+      </select>
     </div>
   )
 }

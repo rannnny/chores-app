@@ -337,7 +337,8 @@ export default function Home() {
                       } ${isSelected && !isToday(day) ? 'ring-1 ring-[#FF922B]' : ''}`}
                     >
                       <span>{format(day, 'd')}</span>
-                      <span className="flex items-center gap-0.5 mt-0.5 h-1.5">
+                      <span className="flex flex-col items-center gap-0.5 mt-0.5">
+                        {isFullMoonDay(day) && <span className="text-[8px] leading-none">🌕</span>}
                         {dueChores.length > 0 && (
                           <span
                             className={`w-1.5 h-1.5 rounded-full ${
@@ -345,7 +346,6 @@ export default function Home() {
                             } ${isToday(day) ? '!bg-white' : ''}`}
                           />
                         )}
-                        {isFullMoonDay(day) && <span className="text-[8px] leading-none">🌕</span>}
                       </span>
                     </button>
                   )
